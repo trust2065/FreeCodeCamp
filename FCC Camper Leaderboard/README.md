@@ -1,5 +1,6 @@
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 Run on VSCode
+
 For CodePen version, pls take a look here: https://codepen.io/trust2065/full/VXyKdz/
 
 Steps to integrate DataTables.js
