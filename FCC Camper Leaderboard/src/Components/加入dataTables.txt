@@ -1,0 +1,24 @@
+1.
+要先有jquery
+
+2.
+in terminal 
+yarn add react-jquery-datatables
+
+$(document).ready(function() {
+    //取得資料後
+    $("#userTable").DataTable();
+});
+
+3.
+在需要設定.DataTable()的檔案 import "datatables.net";
+
+4.
+到table設定id
+<table id="userTable" className="table table-striped table-hover">
+</table>
+
+5.
+要import css, 不然會看不到操作的圖片
+import 'datatables.net-dt/css/jquery.dataTables.css';
+不過目前測試結果無法和table-dark同時作用, 因為dataTable會蓋掉table-dark的css
