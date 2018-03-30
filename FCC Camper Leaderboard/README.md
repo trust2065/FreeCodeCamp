@@ -3,6 +3,7 @@ Run on VSCode
 For CodePen version, pls take a look here: https://codepen.io/trust2065/full/VXyKdz/
 
 Steps to integrate DataTables.js
+
   1.
   install jQuery
 
