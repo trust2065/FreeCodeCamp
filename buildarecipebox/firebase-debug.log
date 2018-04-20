@@ -1,0 +1,32 @@
+[debug] [2018-03-30T21:04:00.107Z] ----------------------------------------------------------------------
+[debug] [2018-03-30T21:04:00.111Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\mochi\AppData\Roaming\npm\node_modules\firebase-tools\bin\firebase serve
+[debug] [2018-03-30T21:04:00.111Z] CLI Version:   3.17.7
+[debug] [2018-03-30T21:04:00.111Z] Platform:      win32
+[debug] [2018-03-30T21:04:00.111Z] Node Version:  v8.9.4
+[debug] [2018-03-30T21:04:00.112Z] Time:          Sat Mar 31 2018 05:04:00 GMT+0800 (台北標準時間)
+[debug] [2018-03-30T21:04:00.112Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-03-30T21:04:00.129Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-03-30T21:04:00.130Z] > authorizing via signed-in user
+[debug] [2018-03-30T21:04:00.133Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/fccrecipe-8d9ba  
+  
+ Sat Mar 31 2018 05:04:00 GMT+0800 (台北標準時間)
+[debug] [2018-03-30T21:04:01.184Z] <<< HTTP RESPONSE 200
+[debug] [2018-03-30T21:04:01.187Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/fccrecipe-8d9ba/tokens  
+  
+ Sat Mar 31 2018 05:04:01 GMT+0800 (台北標準時間)
+[debug] [2018-03-30T21:04:02.050Z] <<< HTTP RESPONSE 200
+[debug] [2018-03-30T21:04:02.053Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/fccrecipe-8d9ba  
+  
+ Sat Mar 31 2018 05:04:02 GMT+0800 (台北標準時間)
+[debug] [2018-03-30T21:04:03.375Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Serving from 'Z:\GIT\GITHUB\FreeCodeCamp\buildarecipebox'...
+[info] 
+[debug] [2018-03-30T21:04:03.385Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/240169389160/clients/_:getWebAppConfig  
+  
+ Sat Mar 31 2018 05:04:03 GMT+0800 (台北標準時間)
+[debug] [2018-03-30T21:04:04.722Z] <<< HTTP RESPONSE 200
+[info] i  hosting: Serving hosting files from: public
+[info] +  hosting: Local server: http://localhost:5000
+
