@@ -1,0 +1,9 @@
+@import url('https://fonts.googleapis.com/css?family=Lobster');
+
+body {
+  margin: 10px;
+  font-family: "Lobster", "serif";
+}
+input.form-control {
+  margin-bottom: 10px;
+}
