@@ -2,7 +2,7 @@
 
 body {
   margin: 10px;
-  font-family: "Lobster", "serif";
+  font-family: "Lobster", "serif" !important;
 }
 input.form-control {
   margin-bottom: 10px;
