@@ -8,6 +8,7 @@ import Step from "./Step.js";
 //   steps: [{ step: 1, desp: "add sugar" }, { step: 2, desp: "add salt" }]
 // };
 let data = {
+  id: 1,
   ingredients: [{ name: "雞蛋" }, { name: "油" }, { name: "牛奶" }],
   steps: [
     { step: 1, desp: "打蛋、盡量打勻" },
@@ -30,7 +31,8 @@ class Recipe extends Component {
     this.setState({ data: data });
   }
   onAddStep() {
-    data.steps.push({ step: "" });
+    let step = data.steps[data.steps.length-1].step + 1;
+    data.steps.push({ step: step });
     this.setState({ data: data });
   }
   render() {
@@ -51,7 +53,7 @@ class Recipe extends Component {
             </div>
             <div className="form-group">
               <label htmlFor="id">Id</label>
-              <input type="text" className="form-control" id="id" />
+              <input type="text" className="form-control" id="id" readOnly />
             </div>
           </div>
           <div className="form-group">
