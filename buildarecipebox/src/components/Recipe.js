@@ -23,6 +23,8 @@ let data = {
 class Recipe extends Component {
   constructor(props) {
     super(props);
+    console.log("contructor");
+    console.log(this.props.match.params.id);
     this.state = { data: data };
     // this.setState({ data: data });
     this.onAddIngredient = this.onAddIngredient.bind(this);
