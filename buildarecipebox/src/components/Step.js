@@ -3,13 +3,20 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 class Step extends Component {
   render() {
-    return <div class="input-group mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="stepAddon">
+    return <div className="input-group mb-3">
+        <div className="input-group-prepend">
+          <span className="input-group-text" id="stepAddon">
             {this.props.step}
           </span>
         </div>
-        <input type="text" class="form-control" aria-describedby="stepAddon" defaultValue={this.props.desp} placeholder="new step" />
+        <input 
+          type="text" 
+          className="form-control" 
+          aria-describedby="stepAddon" 
+          value={this.props.desp} 
+          onChange={(e) => this.props.onChange(e)} 
+          placeholder="new step"
+        />
       </div>;
   }
 }

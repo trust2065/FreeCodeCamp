@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import Ingredient from "./Ingredient.js";
 import Step from "./Step.js";
+import RecipeDao from "./RecipeDao.js";
 
 // let data = {
 //   ingredients: [{ name: "A" }, { name: "B" }, { name: "C" }, { name: "D" }],
@@ -9,6 +10,7 @@ import Step from "./Step.js";
 // };
 let data = {
   id: 1,
+  name: "英式炒蛋",
   ingredients: [{ name: "雞蛋" }, { name: "油" }, { name: "牛奶" }],
   steps: [
     { step: 1, desp: "打蛋、盡量打勻" },
@@ -21,35 +23,77 @@ let data = {
 class Recipe extends Component {
   constructor(props) {
     super(props);
-    this.state = { data };
-    this.setState({ data: data });
+    this.state = { data: data };
+    // this.setState({ data: data });
     this.onAddIngredient = this.onAddIngredient.bind(this);
     this.onAddStep = this.onAddStep.bind(this);
+    this.handleNameChange = this.handleNameChange.bind(this);
   }
   onAddIngredient() {
     data.ingredients.push({ name: "" });
     this.setState({ data: data });
   }
   onAddStep() {
-    let step = data.steps[data.steps.length-1].step + 1;
+    let step = data.steps[data.steps.length - 1].step + 1;
     data.steps.push({ step: step });
     this.setState({ data: data });
   }
+  onUpdateRecipe() {
+    RecipeDao.update("2", data);
+    console.log(data);
+  }
+
+  handleIngredientChange(e, i) {
+    data.ingredients[i].name = e.target.value;
+    this.setState({ data: data });
+  }
+
+  handleStepChange(e, i) {
+    data.steps[i].desp = e.target.value;
+    this.setState({ data: data });
+  }
+
+  handleNameChange(e) {
+    data.name = e.target.value;
+    this.setState({ data: data });
+  }
+
   render() {
+    console.log("render");
     let ingredients = [];
-    data.ingredients.forEach(element => {
-      ingredients.push(<Ingredient key={element.name} name={element.name} />);
+    this.state.data.ingredients.forEach((element, i) => {
+      ingredients.push(
+        <Ingredient
+          key={`ingredient_${i}`}
+          onChange={e => this.handleIngredientChange(e, i)}
+          name={element.name}
+        />
+      );
     });
     let steps = [];
-    data.steps.forEach(element => {
-      steps.push(<Step key={element.step} desp={element.desp} step={element.step}/>);
+    this.state.data.steps.forEach((element, i) => {
+      steps.push(
+        <Step
+          key={`step_${i}`}
+          desp={element.desp}
+          onChange={e => this.handleStepChange(e, i)}
+          step={element.step}
+        />
+      );
     });
-    return <div className="container">
+    return (
+      <div className="container">
         <div className="contents">
           <div className="d-flex justify-content-between">
             <div className="form-group">
               <label htmlFor="name">Name</label>
-              <input type="text" className="form-control" id="name" />
+              <input
+                type="text"
+                className="form-control"
+                id="name"
+                value={this.state.data.name}
+                onChange={this.handleNameChange}
+              />
             </div>
             <div className="form-group">
               <label htmlFor="id">Id</label>
@@ -59,22 +103,25 @@ class Recipe extends Component {
           <div className="form-group">
             <p>Ingredients</p>
             {ingredients}
-            <button class="btn btn-block" onClick={this.onAddIngredient}>
+            <button className="btn btn-block" onClick={this.onAddIngredient}>
               Add
             </button>
           </div>
           <div className="form-group">
             <p>Steps</p>
             {steps}
-            <button class="btn btn-block" onClick={this.onAddStep}>
+            <button className="btn btn-block" onClick={this.onAddStep}>
               Add
             </button>
           </div>
         </div>
         <div className="ctrlBtns">
-          <button className="btn btn-block">Update</button>
+          <button className="btn btn-block" onClick={this.onUpdateRecipe}>
+            Update
+          </button>
         </div>
-      </div>;
+      </div>
+    );
   }
 }
 
