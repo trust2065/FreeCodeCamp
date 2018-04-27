@@ -4,85 +4,94 @@ import Ingredient from "./Ingredient.js";
 import Step from "./Step.js";
 import RecipeDao from "./RecipeDao.js";
 
-// let data = {
-//   ingredients: [{ name: "A" }, { name: "B" }, { name: "C" }, { name: "D" }],
-//   steps: [{ step: 1, desp: "add sugar" }, { step: 2, desp: "add salt" }]
-// };
-let data = {
-  id: 1,
-  name: "英式炒蛋",
-  ingredients: [{ name: "雞蛋" }, { name: "油" }, { name: "牛奶" }],
-  steps: [
-    { step: 1, desp: "打蛋、盡量打勻" },
-    { step: 2, desp: "熱鍋熱油後再下蛋" },
-    { step: 3, desp: "耐心等到邊邊成形後用鍋鏟摺疊蛋" },
-    { step: 4, desp: "不用等到全熟，中間有點生的吃最好吃" }
-  ]
-};
-
+let recipeId;
 class Recipe extends Component {
   constructor(props) {
     super(props);
-    console.log("contructor");
-    console.log(this.props.match.params.id);
+
+    recipeId = this.props.match.params.id;
+    console.log("recipe id: " + recipeId);
+
+    let data = { name: "", ingredients: [], steps: [] };
     this.state = { data: data };
-    // this.setState({ data: data });
+
     this.onAddIngredient = this.onAddIngredient.bind(this);
     this.onAddStep = this.onAddStep.bind(this);
+    this.onUpdateRecipe = this.onUpdateRecipe.bind(this);
     this.handleNameChange = this.handleNameChange.bind(this);
+    this.handleIngredientChange = this.handleIngredientChange.bind(this);
+    this.handleStepChange = this.handleStepChange.bind(this);
   }
+
+  componentDidMount() {
+    RecipeDao.get(recipeId, recipe => {
+      this.setState({ data: recipe });
+    });
+  }
+
   onAddIngredient() {
+    let data = this.state.data;
     data.ingredients.push({ name: "" });
     this.setState({ data: data });
   }
   onAddStep() {
+    let data = this.state.data;
     let step = data.steps[data.steps.length - 1].step + 1;
     data.steps.push({ step: step });
     this.setState({ data: data });
   }
   onUpdateRecipe() {
-    RecipeDao.update("2", data);
+    let data = this.state.data;
+    RecipeDao.update(recipeId, data);
     console.log(data);
   }
 
   handleIngredientChange(e, i) {
+    let data = this.state.data;
     data.ingredients[i].name = e.target.value;
     this.setState({ data: data });
   }
 
   handleStepChange(e, i) {
+    let data = this.state.data;
     data.steps[i].desp = e.target.value;
     this.setState({ data: data });
   }
 
   handleNameChange(e) {
+    let data = this.state.data;
     data.name = e.target.value;
     this.setState({ data: data });
   }
 
   render() {
-    console.log("render");
+    let data = this.state.data;
+    console.log("render Recipe");
     let ingredients = [];
-    this.state.data.ingredients.forEach((element, i) => {
-      ingredients.push(
-        <Ingredient
-          key={`ingredient_${i}`}
-          onChange={e => this.handleIngredientChange(e, i)}
-          name={element.name}
-        />
-      );
-    });
     let steps = [];
-    this.state.data.steps.forEach((element, i) => {
-      steps.push(
-        <Step
-          key={`step_${i}`}
-          desp={element.desp}
-          onChange={e => this.handleStepChange(e, i)}
-          step={element.step}
-        />
-      );
-    });
+    if (data.ingredients && data.ingredients.length > 0) {
+      this.state.data.ingredients.forEach((element, i) => {
+        ingredients.push(
+          <Ingredient
+            key={`ingredient_${i}`}
+            onChange={e => this.handleIngredientChange(e, i)}
+            name={element.name}
+          />
+        );
+      });
+    }
+    if (data.steps && data.steps.length > 0) {
+      this.state.data.steps.forEach((element, i) => {
+        steps.push(
+          <Step key={`step_${i}`} 
+          desp={element.desp} 
+          onChange={e => this.handleStepChange(e, i)} 
+          step={element.step} 
+          />
+        );
+      });
+    }
+    
     return (
       <div className="container">
         <div className="contents">
@@ -93,7 +102,7 @@ class Recipe extends Component {
                 type="text"
                 className="form-control"
                 id="name"
-                value={this.state.data.name}
+                value={this.state.data && this.state.data.hasOwnProperty("name") ? this.state.data.name : ""}
                 onChange={this.handleNameChange}
               />
             </div>

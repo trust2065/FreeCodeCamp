@@ -5,7 +5,7 @@ class Step extends Component {
   render() {
     return <div>
         <h1>Home</h1>
-        <Link to="/recipe/100">
+        <Link to="/recipe/2">
           <button>Show the Recipe</button>
         </Link>
       </div>;
