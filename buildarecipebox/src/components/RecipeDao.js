@@ -1,6 +1,6 @@
 import database from "./Firebase.js";
 
-export function get(id = '2', callback) {
+export function get(id, callback) {
   console.log("getRecipe");
 
   let recipeRef = database.ref(`recipe/${id}`);
@@ -15,8 +15,8 @@ export function get(id = '2', callback) {
   });
 }
 
-export function update(id = 'A2', data) {
-  console.log("updateRecipe");
+export function update(id, data) {
+  console.log(`updateRecipe, id: ${id}`);
 
   let {name, ingredients, steps} = data;
 
@@ -28,5 +28,14 @@ export function update(id = 'A2', data) {
     });
 }
 
+export function getList(callback) {
+  console.log("getRecipeList");
+  database
+    .ref("recipe")
+    .once("value", function(snapshot) {
+      callback(snapshot);
+    });
+}
+
 // export default updateRecipe;
-export default { get, update };
+export default { get, getList, update };

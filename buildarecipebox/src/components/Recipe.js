@@ -25,7 +25,29 @@ class Recipe extends Component {
 
   componentDidMount() {
     RecipeDao.get(recipeId, recipe => {
-      this.setState({ data: recipe });
+      // Update
+      if (recipe) {
+        this.setState({ data: recipe });
+      }
+      // Create
+      else {
+        // get last id
+        let lastId = 0;
+        RecipeDao.getList(snapshot => {
+          snapshot.forEach(function(childSnapshot) {
+            let key = childSnapshot.key;
+            if (key > lastId) {
+              lastId = key;
+            }
+          });
+          console.log(`lastId: ${lastId}`);
+
+          // set recipeId
+          recipeId = parseInt(lastId, 10) + 1;
+          let data = { name: "", ingredients: [], steps: [] };
+          this.setState({ data: data });
+        });
+      }
     });
   }
 
@@ -36,14 +58,17 @@ class Recipe extends Component {
   }
   onAddStep() {
     let data = this.state.data;
-    let step = data.steps[data.steps.length - 1].step + 1;
+    let step = 1;
+    if (data.steps.length > 0) {
+      step = data.steps[data.steps.length - 1].step + 1;
+    }
     data.steps.push({ step: step });
     this.setState({ data: data });
   }
   onUpdateRecipe() {
     let data = this.state.data;
     RecipeDao.update(recipeId, data);
-    console.log(data);
+    // console.log(data);
   }
 
   handleIngredientChange(e, i) {

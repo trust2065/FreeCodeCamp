@@ -8,6 +8,9 @@ class Home extends Component {
         <Link to="/recipe/2">
           <button>Show the Recipe</button>
         </Link>
+        <Link to="/recipe/new">
+          <button>Create Recipe</button>
+        </Link>
       </div>;
   }
 }
