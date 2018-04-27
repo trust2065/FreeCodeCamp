@@ -36,7 +36,7 @@ class Recipe extends Component {
         RecipeDao.getList(snapshot => {
           snapshot.forEach(function(childSnapshot) {
             let key = childSnapshot.key;
-            if (key > lastId) {
+            if (parseInt(key, 10) > parseInt(lastId, 10)) {
               lastId = key;
             }
           });
