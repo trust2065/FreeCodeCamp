@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "bootstrap": "^4.1.0",
+    "datatables.net-dt": "^1.10.16",
     "firebase": "^4.13.1",
     "firebase-tools": "^3.17.7",
     "jquery": "^3.3.1",

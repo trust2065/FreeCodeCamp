@@ -33,7 +33,9 @@ export function getList(callback) {
   database
     .ref("recipe")
     .once("value", function(snapshot) {
-      callback(snapshot);
+      if (callback) {
+        callback(snapshot);
+      }
     });
 }
 
