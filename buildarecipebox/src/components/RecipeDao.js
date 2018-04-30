@@ -15,7 +15,7 @@ export function get(id, callback) {
   });
 }
 
-export function update(id, data) {
+export function update(id, data, callback) {
   console.log(`updateRecipe, id: ${id}`);
 
   let {name, ingredients, steps} = data;
@@ -23,6 +23,11 @@ export function update(id, data) {
   database
     .ref("recipe/" + id)
     .update({ name: name, ingredients: ingredients, steps: steps })
+    .then(()=> {
+      if (callback) {
+        callback();
+      }
+    })
     .catch(function(error) {
       console.error("update錯誤", error);
     });

@@ -7,3 +7,12 @@ body {
 input.form-control {
   margin-bottom: 10px;
 }
+.disable
+{
+    cursor: not-allowed;
+}
+
+.disable > * 
+{
+    pointer-events:none;
+}
