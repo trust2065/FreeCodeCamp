@@ -13,7 +13,7 @@ class Recipe extends Component {
     console.log("recipe id: " + recipeId);
 
     let data = { name: "", ingredients: [], steps: [] };
-    this.state = { data: data, updateStatus: 0 };
+    this.state = { recipeId: recipeId, data: data, updateStatus: 0 };
 
     this.onAddIngredient = this.onAddIngredient.bind(this);
     this.onAddStep = this.onAddStep.bind(this);
@@ -51,7 +51,7 @@ class Recipe extends Component {
           // set recipeId
           recipeId = parseInt(lastId, 10) + 1;
           let data = { name: "", ingredients: [], steps: [] };
-          this.setState({ data: data });
+          this.setState({ recipeId: recipeId, data: data });
         });
       }
     });
@@ -166,7 +166,7 @@ class Recipe extends Component {
             </div>
             <div className="form-group">
               <label htmlFor="id">Id</label>
-              <input type="text" className="form-control" id="id" readOnly />
+              <input type="text" className="form-control" id="id" value={this.state.recipeId} readOnly />
             </div>
           </div>
           <div className="form-group">
