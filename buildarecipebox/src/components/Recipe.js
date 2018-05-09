@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import "bootstrap/dist/css/bootstrap.min.css";
-import Ingredient from "./Ingredient.js";
-import Step from "./Step.js";
-import RecipeDao from "./RecipeDao.js";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Ingredient from './Ingredient.js';
+import Step from './Step.js';
+import RecipeDao from './RecipeDao.js';
 
 let recipeId;
 class Recipe extends Component {
@@ -10,9 +10,9 @@ class Recipe extends Component {
     super(props);
 
     recipeId = this.props.match.params.id;
-    console.log("recipe id: " + recipeId);
+    console.log('recipe id: ' + recipeId);
 
-    let data = { name: "", ingredients: [], steps: [] };
+    let data = { name: '', ingredients: [], steps: [] };
     this.state = { recipeId: recipeId, data: data, updateStatus: 0 };
 
     this.onAddIngredient = this.onAddIngredient.bind(this);
@@ -27,10 +27,10 @@ class Recipe extends Component {
     RecipeDao.get(recipeId, recipe => {
       // Update
       if (recipe) {
-        if (!recipe.hasOwnProperty("ingredients")) {
+        if (!recipe.hasOwnProperty('ingredients')) {
           recipe.ingredients = [];
         }
-        if (!recipe.hasOwnProperty("steps")) {
+        if (!recipe.hasOwnProperty('steps')) {
           recipe.steps = [];
         }
         this.setState({ data: recipe });
@@ -50,7 +50,7 @@ class Recipe extends Component {
 
           // set recipeId
           recipeId = parseInt(lastId, 10) + 1;
-          let data = { name: "", ingredients: [], steps: [] };
+          let data = { name: '', ingredients: [], steps: [] };
           this.setState({ recipeId: recipeId, data: data });
         });
       }
@@ -59,17 +59,16 @@ class Recipe extends Component {
 
   onAddIngredient() {
     let data = this.state.data;
-    data.ingredients.push({ name: "" });
+    data.ingredients.push({ name: '' });
     this.setState({ data: data });
   }
   onAddStep() {
     let data = this.state.data;
     let step = 1;
-    
+
     if (data.steps.length === 0) {
       step = 1;
-    }
-    else {
+    } else {
       step = data.steps[data.steps.length - 1].step + 1;
     }
     data.steps.push({ step: step });
@@ -77,7 +76,7 @@ class Recipe extends Component {
   }
   onUpdateRecipe() {
     let data = this.state.data;
-    this.setState({updateStatus: 1});
+    this.setState({ updateStatus: 1 });
 
     RecipeDao.update(recipeId, data, () => {
       this.setState({ updateStatus: 2 });
@@ -108,7 +107,7 @@ class Recipe extends Component {
 
   render() {
     let data = this.state.data;
-    console.log("render Recipe");
+    console.log('render Recipe');
     let ingredients = [];
     let steps = [];
     if (data.ingredients && data.ingredients.length > 0) {
@@ -125,48 +124,66 @@ class Recipe extends Component {
     if (data.steps && data.steps.length > 0) {
       this.state.data.steps.forEach((element, i) => {
         steps.push(
-          <Step key={`step_${i}`} 
-          desp={element.desp} 
-          onChange={e => this.handleStepChange(e, i)} 
-          step={element.step} 
+          <Step
+            key={`step_${i}`}
+            desp={element.desp}
+            onChange={e => this.handleStepChange(e, i)}
+            step={element.step}
           />
         );
       });
     }
 
-    let styleBtnUpdateText; 
+    let styleBtnUpdateText;
     let toggleDisable = false;
     let btnUpdateText;
 
     switch (this.state.updateStatus) {
       case 0:
-        btnUpdateText = "update";
-        styleBtnUpdateText = "btn-primary";
+        btnUpdateText = 'update';
+        styleBtnUpdateText = 'btn-primary';
         break;
       case 1:
-        btnUpdateText = "updating";
+        btnUpdateText = 'updating';
         toggleDisable = true;
-        styleBtnUpdateText = "btn-warning disable";
+        styleBtnUpdateText = 'btn-warning disable';
         break;
       case 2:
-        btnUpdateText = "update complete";
+        btnUpdateText = 'update complete';
         toggleDisable = true;
-        styleBtnUpdateText = "btn-success disable";
+        styleBtnUpdateText = 'btn-success disable';
         break;
       default:
         break;
     }
-    
-    return <div className="container">
+
+    return (
+      <div className="container">
         <div className="contents">
           <div className="d-flex justify-content-between">
             <div className="form-group">
               <label htmlFor="name">Name</label>
-              <input type="text" className="form-control" id="name" value={this.state.data && this.state.data.hasOwnProperty("name") ? this.state.data.name : ""} onChange={this.handleNameChange} />
+              <input
+                type="text"
+                className="form-control"
+                id="name"
+                value={
+                  this.state.data && this.state.data.hasOwnProperty('name')
+                    ? this.state.data.name
+                    : ''
+                }
+                onChange={this.handleNameChange}
+              />
             </div>
             <div className="form-group">
               <label htmlFor="id">Id</label>
-              <input type="text" className="form-control" id="id" value={this.state.recipeId} readOnly />
+              <input
+                type="text"
+                className="form-control"
+                id="id"
+                value={this.state.recipeId}
+                readOnly
+              />
             </div>
           </div>
           <div className="form-group">
@@ -185,11 +202,15 @@ class Recipe extends Component {
           </div>
         </div>
         <div className="ctrlBtns">
-          <button disabled={toggleDisable} className={`btn btn-block ${styleBtnUpdateText}`} onClick={this.onUpdateRecipe}>
+          <button
+            disabled={toggleDisable}
+            className={`btn btn-block ${styleBtnUpdateText}`}
+            onClick={this.onUpdateRecipe}>
             {btnUpdateText}
           </button>
         </div>
-      </div>;
+      </div>
+    );
   }
 }
 

@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import RecipeDao from "./RecipeDao";
-import RecipeRow from "./RecipeRow";
-import "../css/Home.css";
-import $ from "jquery";
-import "datatables.net";
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import RecipeDao from './RecipeDao';
+import RecipeRow from './RecipeRow';
+import '../css/Home.css';
+import $ from 'jquery';
+import 'datatables.net';
 class Home extends Component {
   constructor(props) {
     super(props);
@@ -22,12 +22,13 @@ class Home extends Component {
       });
 
       this.setState({ rows: rows });
-      $("#recipeTable").DataTable();
+      $('#recipeTable').DataTable();
     });
   }
 
   render() {
-    return <div className="container">
+    return (
+      <div className="container">
         <div className="recipeActions">
           <Link to="/recipe/new">
             <button>Create Recipe</button>
@@ -43,7 +44,8 @@ class Home extends Component {
             <tbody>{this.state.rows}</tbody>
           </table>
         </div>
-      </div>;
+      </div>
+    );
   }
 }
 

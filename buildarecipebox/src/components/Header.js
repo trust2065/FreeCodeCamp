@@ -1,10 +1,11 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import "../css/index.css";
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import '../css/index.css';
 
 class Header extends Component {
   render() {
-    return <div className="container">
+    return (
+      <div className="container">
         <nav className="navbar">
           <div className="navbar-brand">
             <Link to="/">
@@ -12,7 +13,8 @@ class Header extends Component {
             </Link>
           </div>
         </nav>
-      </div>;
+      </div>
+    );
   }
 }
 export default Header;
