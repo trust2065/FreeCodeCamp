@@ -22,7 +22,9 @@ class Home extends Component {
       });
 
       this.setState({ rows: rows });
-      $('#recipeTable').DataTable();
+      $('#recipeTable').DataTable({
+        columnDefs: [{ width: '10%', targets: 0 }]
+      });
     });
   }
 
@@ -38,6 +40,7 @@ class Home extends Component {
           <table id="recipeTable" className="table table-striped table-hover">
             <thead>
               <tr>
+                <th scope="col">No</th>
                 <th scope="col">Name</th>
               </tr>
             </thead>

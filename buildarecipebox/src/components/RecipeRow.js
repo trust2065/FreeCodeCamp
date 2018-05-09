@@ -8,11 +8,9 @@ class RecipeRow extends React.Component {
     const linkKey = this.props.linkKey;
     return (
       <tr>
+        <td scope="col">#{linkKey}</td>
         <td>
-          <th scope="col">#{linkKey}</th>
-          <td>
-            <Link to={`/recipe/${linkKey}`}>{name}</Link>
-          </td>
+          <Link to={`/recipe/${linkKey}`}>{name}</Link>
         </td>
       </tr>
     );
