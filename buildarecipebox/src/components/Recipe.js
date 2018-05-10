@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Ingredient from './Ingredient.js';
 import Step from './Step.js';
-import RecipeDao from './RecipeDao.js';
 import { connect } from 'react-redux';
 import {
   FETCH_RECIPE,
@@ -78,7 +77,6 @@ const Recipe = connect(store => {
         steps,
         name,
         fetching,
-        fetched,
         updating,
         updated,
         recipeId

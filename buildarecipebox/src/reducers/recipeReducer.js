@@ -1,6 +1,3 @@
-import RecipeDao from '../components/RecipeDao';
-import { GET_NEWID_FULFILL } from '../actions/recipeActions';
-
 export default (
   state = {
     recipeId: 0,
@@ -50,7 +47,7 @@ export default (
     case 'NAME_CHANGE':
       return { ...state, name: action.payload };
     case 'INGREDIENT_CHANGE':
-      let ingredients = [...state.ingredients];
+      ingredients = [...state.ingredients];
       ingredients[action.payload.order].name = action.payload.changedText;
       return { ...state, ingredients: ingredients };
     case 'STEP_CHANGE':
@@ -79,6 +76,7 @@ export default (
       ingredients = [...state.ingredients];
       ingredients.push({ name: '' });
       return { ...state, ingredients: ingredients };
+    default:
+      return state;
   }
-  return state;
 };
