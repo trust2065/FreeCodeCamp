@@ -28,11 +28,9 @@ export function FETCH_RECIPE(recipeId) {
                 lastId = key;
               }
             });
-            console.log(`lastId: ${lastId}`);
-
+            // console.log(`lastId: ${lastId}`);
             // set recipeId
             const newRecipeId = parseInt(lastId, 10) + 1;
-            console.log(`newId: ${newRecipeId}`);
             dispatch({
               type: 'FETCH_RECIPE_FULFILL_NEWRECIPE',
               payload: newRecipeId
