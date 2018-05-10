@@ -4,23 +4,33 @@ import Ingredient from './Ingredient.js';
 import Step from './Step.js';
 import RecipeDao from './RecipeDao.js';
 import { connect } from 'react-redux';
-import { SETNAME } from '../actions/nameAction';
+import {
+  FETCH_RECIPE,
+  NAME_CHANGE,
+  INGREDIENT_CHANGE,
+  STEP_CHANGE,
+  UPDATE_RECIPE,
+  RESET,
+  STEP_ADD,
+  INGREDIENT_ADD
+} from '../actions/recipeActions';
 
-let recipeId;
+// let recipeId;
 const Recipe = connect(store => {
   return {
-    name: store.name.name
+    recipeId: store.recipe.recipeId,
+    steps: store.recipe.steps,
+    ingredients: store.recipe.ingredients,
+    name: store.recipe.name,
+    fetching: store.recipe.fetching,
+    fetched: store.recipe.fetched,
+    updating: store.recipe.updating,
+    updated: store.recipe.updated
   };
 })(
   class Recipe extends Component {
     constructor(props) {
       super(props);
-
-      recipeId = this.props.match.params.id;
-      console.log('recipe id: ' + recipeId);
-
-      let data = { name: '', ingredients: [], steps: [] };
-      this.state = { recipeId: recipeId, data: data, updateStatus: 0 };
 
       this.onAddIngredient = this.onAddIngredient.bind(this);
       this.onAddStep = this.onAddStep.bind(this);
@@ -30,103 +40,55 @@ const Recipe = connect(store => {
       this.handleStepChange = this.handleStepChange.bind(this);
     }
     componentDidMount() {
-      RecipeDao.get(recipeId, recipe => {
-        // Update
-        if (recipe) {
-          if (!recipe.hasOwnProperty('ingredients')) {
-            recipe.ingredients = [];
-          }
-          if (!recipe.hasOwnProperty('steps')) {
-            recipe.steps = [];
-          }
-          this.props.dispatch(SETNAME(recipe.name));
-          this.setState({ data: recipe });
-        }
-        // Create
-        else {
-          // get last id
-          let lastId = 0;
-          RecipeDao.getList(snapshot => {
-            snapshot.forEach(function(childSnapshot) {
-              let key = childSnapshot.key;
-              if (parseInt(key, 10) > parseInt(lastId, 10)) {
-                lastId = key;
-              }
-            });
-            console.log(`lastId: ${lastId}`);
-
-            // set recipeId
-            recipeId = parseInt(lastId, 10) + 1;
-            let data = { name: '', ingredients: [], steps: [] };
-            this.setState({ recipeId: recipeId, data: data });
-          });
-        }
-      });
+      const recipeId = this.props.match.params.id;
+      console.log('recipe id: ' + recipeId);
+      this.props.dispatch(FETCH_RECIPE(recipeId));
     }
 
     onAddIngredient() {
-      let data = this.state.data;
-      data.ingredients.push({ name: '' });
-      this.setState({ data: data });
+      this.props.dispatch(INGREDIENT_ADD());
     }
     onAddStep() {
-      let data = this.state.data;
-      let step = 1;
-
-      if (data.steps.length === 0) {
-        step = 1;
-      } else {
-        step = data.steps[data.steps.length - 1].step + 1;
-      }
-      data.steps.push({ step: step });
-      this.setState({ data: data });
+      this.props.dispatch(STEP_ADD());
     }
     onUpdateRecipe() {
-      let data = this.state.data;
-      this.setState({ updateStatus: 1 });
-
-      RecipeDao.update(recipeId, data, () => {
-        this.setState({ updateStatus: 2 });
-      });
-      setTimeout(() => {
-        this.setState({ updateStatus: 0 });
-      }, 2000);
-      // console.log(data);
+      const { recipeId, name, steps, ingredients } = this.props;
+      this.props.dispatch(UPDATE_RECIPE(recipeId, name, ingredients, steps));
     }
 
     handleIngredientChange(e, i) {
-      let data = this.state.data;
-      data.ingredients[i].name = e.target.value;
-      this.setState({ data: data });
+      const changedText = e.target.value;
+      this.props.dispatch(INGREDIENT_CHANGE(i, changedText));
     }
 
     handleStepChange(e, i) {
-      let data = this.state.data;
-      data.steps[i].desp = e.target.value;
-      this.setState({ data: data });
+      const changedText = e.target.value;
+      this.props.dispatch(STEP_CHANGE(i, changedText));
     }
 
     handleNameChange(e) {
-      this.props.dispatch(SETNAME(e.target.value));
-      // let data = this.state.data;
-      // data.name = ;
-      // this.setState({ data: data });
+      this.props.dispatch(NAME_CHANGE(e.target.value));
     }
 
     render() {
-      // console.log('render Recipe');
+      console.log('render Recipe');
       console.log(this.props);
-
       const {
-        name: { name }
+        ingredients,
+        steps,
+        name,
+        fetching,
+        fetched,
+        updating,
+        updated,
+        recipeId
       } = this.props;
 
-      let data = this.state.data;
-      let ingredients = [];
-      let steps = [];
-      if (data.ingredients && data.ingredients.length > 0) {
-        this.state.data.ingredients.forEach((element, i) => {
-          ingredients.push(
+      let ingredientsRow = [];
+      let stepsRow = [];
+      if (ingredients && ingredients.length > 0) {
+        ingredients.forEach((element, i) => {
+          ingredientsRow.push(
             <Ingredient
               key={`ingredient_${i}`}
               onChange={e => this.handleIngredientChange(e, i)}
@@ -135,9 +97,9 @@ const Recipe = connect(store => {
           );
         });
       }
-      if (data.steps && data.steps.length > 0) {
-        this.state.data.steps.forEach((element, i) => {
-          steps.push(
+      if (steps && steps.length > 0) {
+        steps.forEach((element, i) => {
+          stepsRow.push(
             <Step
               key={`step_${i}`}
               desp={element.desp}
@@ -152,23 +114,24 @@ const Recipe = connect(store => {
       let toggleDisable = false;
       let btnUpdateText;
 
-      switch (this.state.updateStatus) {
-        case 0:
-          btnUpdateText = 'update';
-          styleBtnUpdateText = 'btn-primary';
-          break;
-        case 1:
+      if (fetching || updating) {
+        if (fetching) {
+          btnUpdateText = 'fetching';
+        } else if (updating) {
           btnUpdateText = 'updating';
-          toggleDisable = true;
-          styleBtnUpdateText = 'btn-warning disable';
-          break;
-        case 2:
-          btnUpdateText = 'update complete';
-          toggleDisable = true;
-          styleBtnUpdateText = 'btn-success disable';
-          break;
-        default:
-          break;
+        }
+        toggleDisable = true;
+        styleBtnUpdateText = 'btn-warning disable';
+      } else if (updated) {
+        btnUpdateText = 'update complete';
+        toggleDisable = true;
+        styleBtnUpdateText = 'btn-success disable';
+        setTimeout(() => {
+          this.props.dispatch(RESET());
+        }, 2000);
+      } else {
+        btnUpdateText = 'update';
+        styleBtnUpdateText = 'btn-primary';
       }
 
       return (
@@ -191,21 +154,21 @@ const Recipe = connect(store => {
                   type="text"
                   className="form-control"
                   id="id"
-                  value={this.state.recipeId}
+                  value={recipeId}
                   readOnly
                 />
               </div>
             </div>
             <div className="form-group">
               <p>Ingredients</p>
-              {ingredients}
+              {ingredientsRow}
               <button className="btn btn-block" onClick={this.onAddIngredient}>
                 Add
               </button>
             </div>
             <div className="form-group">
               <p>Steps</p>
-              {steps}
+              {stepsRow}
               <button className="btn btn-block" onClick={this.onAddStep}>
                 Add
               </button>

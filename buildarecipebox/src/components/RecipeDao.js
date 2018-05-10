@@ -5,9 +5,9 @@ export function get(id, callback) {
 
   let recipeRef = database.ref(`recipe/${id}`);
   recipeRef.on('value', function(snapshot) {
-    console.log('getRecipe result: ');
+    // console.log('getRecipe result: ');
     let recipe = snapshot.val();
-    console.log(recipe);
+    // console.log(recipe);
     if (callback) {
       callback(recipe);
     }
