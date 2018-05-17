@@ -11,7 +11,8 @@ import {
   UPDATE_RECIPE,
   RESET,
   STEP_ADD,
-  INGREDIENT_ADD
+  INGREDIENT_ADD,
+  STEP_DELETE
 } from '../actions/recipeActions';
 
 // let recipeId;
@@ -40,7 +41,7 @@ const Recipe = connect(store => {
     }
     componentDidMount() {
       const recipeId = this.props.match.params.id;
-      console.log('recipe id: ' + recipeId);
+      // console.log('recipe id: ' + recipeId);
       this.props.dispatch(FETCH_RECIPE(recipeId));
     }
 
@@ -69,9 +70,14 @@ const Recipe = connect(store => {
       this.props.dispatch(NAME_CHANGE(e.target.value));
     }
 
+    handleStepDelete(i) {
+      // console.log('delete: ' + i);
+      this.props.dispatch(STEP_DELETE(i));
+    }
+
     render() {
-      console.log('render Recipe');
-      console.log(this.props);
+      // console.log('render Recipe');
+      // console.log(this.props);
       const {
         ingredients,
         steps,
@@ -102,6 +108,7 @@ const Recipe = connect(store => {
               key={`step_${i}`}
               desp={element.desp}
               onChange={e => this.handleStepChange(e, i)}
+              onDelete={() => this.handleStepDelete(i)}
               step={element.step}
             />
           );

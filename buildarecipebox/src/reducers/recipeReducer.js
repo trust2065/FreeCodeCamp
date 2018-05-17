@@ -76,6 +76,17 @@ export default (
       ingredients = [...state.ingredients];
       ingredients.push({ name: '' });
       return { ...state, ingredients: ingredients };
+    case 'STEP_DELETE':
+      const targetIndex = action.payload;
+      steps = [...state.steps];
+      steps.splice(targetIndex, 1);
+      steps = steps.map((step, i) => {
+        if (i >= targetIndex) {
+          step.step = step.step - 1;
+        }
+        return step;
+      });
+      return { ...state, steps: steps };
     default:
       return state;
   }

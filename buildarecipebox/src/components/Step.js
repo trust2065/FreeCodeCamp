@@ -18,6 +18,11 @@ class Step extends Component {
           onChange={e => this.props.onChange(e)}
           placeholder="new step"
         />
+        <div className="input-group-append">
+          <span onClick={this.props.onDelete} className="input-group-text">
+            X
+          </span>
+        </div>
       </div>
     );
   }

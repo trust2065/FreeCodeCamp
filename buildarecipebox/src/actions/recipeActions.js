@@ -11,8 +11,8 @@ export function FETCH_RECIPE(recipeId) {
       'value',
       function(snapshot) {
         let recipe = snapshot.val();
-        console.log('recipe');
-        console.log(recipe);
+        // console.log('recipe');
+        // console.log(recipe);
         if (recipe) {
           dispatch({
             type: 'FETCH_RECIPE_FULFILL',
@@ -112,5 +112,12 @@ export function INGREDIENT_ADD() {
 export function GET_NEWID_FULFILL() {
   return {
     type: 'GET_NEWID_FULFILL'
+  };
+}
+
+export function STEP_DELETE(i) {
+  return {
+    type: 'STEP_DELETE',
+    payload: i
   };
 }
