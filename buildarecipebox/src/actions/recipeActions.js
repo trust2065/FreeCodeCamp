@@ -48,14 +48,19 @@ export function FETCH_RECIPE(recipeId) {
   };
 }
 
-export function UPDATE_RECIPE(recipeId, name, ingredients, steps) {
+export function UPDATE_RECIPE(recipeId, name, ingredients, steps, imgURL) {
   return dispatch => {
     dispatch({
       type: 'UPDATE_RECIPE_PENDING'
     });
     database
       .ref('recipe/' + recipeId)
-      .update({ name: name, ingredients: ingredients, steps: steps })
+      .update({
+        name: name,
+        ingredients: ingredients,
+        steps: steps,
+        imgURL: imgURL
+      })
       .then(() => {
         dispatch({
           type: 'UPDATE_RECIPE_FULFILL'
@@ -126,5 +131,12 @@ export function INGREDIENT_DELETE(i) {
   return {
     type: 'INGREDIENT_DELETE',
     payload: i
+  };
+}
+
+export function IMG_CHANGE(link) {
+  return {
+    type: 'IMG_CHANGE',
+    payload: link
   };
 }

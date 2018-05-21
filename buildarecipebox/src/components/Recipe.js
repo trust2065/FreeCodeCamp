@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
+import $ from 'jquery';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { connect } from 'react-redux';
+import React, { Component } from 'react';
 import Ingredient from './Ingredient.js';
 import Step from './Step.js';
-import { connect } from 'react-redux';
 import {
   FETCH_RECIPE,
   NAME_CHANGE,
@@ -13,7 +14,8 @@ import {
   STEP_ADD,
   INGREDIENT_ADD,
   STEP_DELETE,
-  INGREDIENT_DELETE
+  INGREDIENT_DELETE,
+  IMG_CHANGE
 } from '../actions/recipeActions';
 
 // let recipeId;
@@ -26,7 +28,8 @@ const Recipe = connect(store => {
     fetching: store.recipe.fetching,
     fetched: store.recipe.fetched,
     updating: store.recipe.updating,
-    updated: store.recipe.updated
+    updated: store.recipe.updated,
+    imgURL: store.recipe.imgURL
   };
 })(
   class Recipe extends Component {
@@ -39,22 +42,29 @@ const Recipe = connect(store => {
       this.handleNameChange = this.handleNameChange.bind(this);
       this.handleIngredientChange = this.handleIngredientChange.bind(this);
       this.handleStepChange = this.handleStepChange.bind(this);
+      this.onImageUpload = this.onImageUpload.bind(this);
     }
+
     componentDidMount() {
       const recipeId = this.props.match.params.id;
       // console.log('recipe id: ' + recipeId);
       this.props.dispatch(FETCH_RECIPE(recipeId));
+      this.onImageUpload();
     }
 
     onAddIngredient() {
       this.props.dispatch(INGREDIENT_ADD());
     }
+
     onAddStep() {
       this.props.dispatch(STEP_ADD());
     }
+
     onUpdateRecipe() {
-      const { recipeId, name, steps, ingredients } = this.props;
-      this.props.dispatch(UPDATE_RECIPE(recipeId, name, ingredients, steps));
+      const { recipeId, name, steps, ingredients, imgURL } = this.props;
+      this.props.dispatch(
+        UPDATE_RECIPE(recipeId, name, ingredients, steps, imgURL)
+      );
     }
 
     handleIngredientChange(e, i) {
@@ -80,6 +90,44 @@ const Recipe = connect(store => {
       this.props.dispatch(INGREDIENT_DELETE(i));
     }
 
+    onImageUpload() {
+      const self = this;
+      $('input[type=file]').on('change', function() {
+        var $files = $(this).get(0).files;
+        if ($files.length) {
+          // Reject big files
+          if ($files[0].size > $(this).data('max-size') * 1024) {
+            console.log('Please select a smaller file');
+            return false;
+          }
+          const apiUrl = 'https://api.imgur.com/3/image';
+
+          const settings = {
+            async: false,
+            crossDomain: true,
+            processData: false,
+            contentType: false,
+            type: 'POST',
+            url: apiUrl,
+            headers: {
+              Authorization: 'Bearer 260fc95d35018764d37bf918a786974790e9dcbb'
+            },
+            mimeType: 'multipart/form-data'
+          };
+
+          var formData = new FormData();
+          formData.append('image', $files[0]);
+          settings.data = formData;
+
+          $.ajax(settings).done(function(response) {
+            response = JSON.parse(response);
+            console.log(response.data.link);
+            self.props.dispatch(IMG_CHANGE(response.data.link));
+          });
+        }
+      });
+    }
+
     render() {
       // console.log('render Recipe');
       // console.log(this.props);
@@ -90,7 +138,8 @@ const Recipe = connect(store => {
         fetching,
         updating,
         updated,
-        recipeId
+        recipeId,
+        imgURL
       } = this.props;
 
       let ingredientsRow = [];
@@ -198,7 +247,17 @@ const Recipe = connect(store => {
                 </button>
               </div>
             </div>
-            <div className="col-sm" />
+            <div className="col-sm">
+              <form id="imgur">
+                <input
+                  type="file"
+                  class="imgur"
+                  accept="image/*"
+                  data-max-size="5000"
+                />
+              </form>
+              <img className="img-fluid" src={imgURL} alt="img" />
+            </div>
           </div>
         </div>
       );

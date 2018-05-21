@@ -7,7 +7,8 @@ export default (
     fetching: false,
     fetched: false,
     updating: false,
-    updated: false
+    updated: false,
+    imgURL: ''
   },
   action
 ) => {
@@ -37,12 +38,13 @@ export default (
       }
       return {
         ...state,
-        steps: recipe.steps,
-        ingredients: recipe.ingredients,
-        name: recipe.name,
         fetching: false,
         fetched: true,
-        recipeId: recipeId
+        imgURL: recipe.imgURL,
+        ingredients: recipe.ingredients,
+        name: recipe.name,
+        recipeId: recipeId,
+        steps: recipe.steps
       };
     case 'FETCH_RECIPE_REJECT':
       return { ...state, error: action.payload, fetching: false };
@@ -94,6 +96,9 @@ export default (
       ingredients = [...state.ingredients];
       ingredients.splice(targetIndex, 1);
       return { ...state, ingredients: ingredients };
+    case 'IMG_CHANGE':
+      return { ...state, imgURL: action.payload };
+
     default:
       return state;
   }
