@@ -13,6 +13,8 @@ export default (
 ) => {
   let steps;
   let ingredients;
+  let targetIndex;
+
   switch (action.type) {
     case 'FETCH_RECIPE_PENDING':
       return { ...state, fetching: true };
@@ -77,7 +79,7 @@ export default (
       ingredients.push({ name: '' });
       return { ...state, ingredients: ingredients };
     case 'STEP_DELETE':
-      const targetIndex = action.payload;
+      targetIndex = action.payload;
       steps = [...state.steps];
       steps.splice(targetIndex, 1);
       steps = steps.map((step, i) => {
@@ -87,6 +89,11 @@ export default (
         return step;
       });
       return { ...state, steps: steps };
+    case 'INGREDIENT_DELETE':
+      targetIndex = action.payload;
+      ingredients = [...state.ingredients];
+      ingredients.splice(targetIndex, 1);
+      return { ...state, ingredients: ingredients };
     default:
       return state;
   }

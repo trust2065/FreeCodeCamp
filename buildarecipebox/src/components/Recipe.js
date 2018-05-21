@@ -12,7 +12,8 @@ import {
   RESET,
   STEP_ADD,
   INGREDIENT_ADD,
-  STEP_DELETE
+  STEP_DELETE,
+  INGREDIENT_DELETE
 } from '../actions/recipeActions';
 
 // let recipeId;
@@ -71,8 +72,12 @@ const Recipe = connect(store => {
     }
 
     handleStepDelete(i) {
-      // console.log('delete: ' + i);
       this.props.dispatch(STEP_DELETE(i));
+    }
+
+    handleIngredientDelete(i) {
+      // console.log('delete: ' + i);
+      this.props.dispatch(INGREDIENT_DELETE(i));
     }
 
     render() {
@@ -96,6 +101,7 @@ const Recipe = connect(store => {
             <Ingredient
               key={`ingredient_${i}`}
               onChange={e => this.handleIngredientChange(e, i)}
+              onDelete={() => this.handleIngredientDelete(i)}
               name={element.name}
             />
           );

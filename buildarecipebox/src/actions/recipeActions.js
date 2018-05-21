@@ -121,3 +121,10 @@ export function STEP_DELETE(i) {
     payload: i
   };
 }
+
+export function INGREDIENT_DELETE(i) {
+  return {
+    type: 'INGREDIENT_DELETE',
+    payload: i
+  };
+}
