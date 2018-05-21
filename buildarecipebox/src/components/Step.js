@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Button } from '../components';
 
 class Step extends Component {
   render() {
@@ -19,9 +20,9 @@ class Step extends Component {
           placeholder="new step"
         />
         <div className="input-group-append">
-          <span onClick={this.props.onDelete} className="input-group-text">
+          <Button onClick={this.props.onDelete} className="input-group-text">
             X
-          </span>
+          </Button>
         </div>
       </div>
     );
