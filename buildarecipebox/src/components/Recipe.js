@@ -147,51 +147,58 @@ const Recipe = connect(store => {
 
       return (
         <div className="container">
-          <div className="contents">
-            <div className="d-flex justify-content-between">
-              <div className="form-group">
-                <label htmlFor="name">Name</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="name"
-                  value={name}
-                  onChange={this.handleNameChange}
-                />
+          <div className="row">
+            <div className="col-sm-8">
+              <div className="contents">
+                <div className="d-flex justify-content-between">
+                  <div className="form-group">
+                    <label htmlFor="name">Name</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="name"
+                      value={name}
+                      onChange={this.handleNameChange}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="id">Id</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="id"
+                      value={recipeId}
+                      readOnly
+                    />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <p>Ingredients</p>
+                  {ingredientsRow}
+                  <button
+                    className="btn btn-block"
+                    onClick={this.onAddIngredient}>
+                    Add
+                  </button>
+                </div>
+                <div className="form-group">
+                  <p>Steps</p>
+                  {stepsRow}
+                  <button className="btn btn-block" onClick={this.onAddStep}>
+                    Add
+                  </button>
+                </div>
               </div>
-              <div className="form-group">
-                <label htmlFor="id">Id</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="id"
-                  value={recipeId}
-                  readOnly
-                />
+              <div className="ctrlBtns">
+                <button
+                  disabled={toggleDisable}
+                  className={`btn btn-block ${styleBtnUpdateText}`}
+                  onClick={this.onUpdateRecipe}>
+                  {btnUpdateText}
+                </button>
               </div>
             </div>
-            <div className="form-group">
-              <p>Ingredients</p>
-              {ingredientsRow}
-              <button className="btn btn-block" onClick={this.onAddIngredient}>
-                Add
-              </button>
-            </div>
-            <div className="form-group">
-              <p>Steps</p>
-              {stepsRow}
-              <button className="btn btn-block" onClick={this.onAddStep}>
-                Add
-              </button>
-            </div>
-          </div>
-          <div className="ctrlBtns">
-            <button
-              disabled={toggleDisable}
-              className={`btn btn-block ${styleBtnUpdateText}`}
-              onClick={this.onUpdateRecipe}>
-              {btnUpdateText}
-            </button>
+            <div className="col-sm" />
           </div>
         </div>
       );
