@@ -28,6 +28,7 @@ const Recipe = connect(store => {
     fetched: store.recipe.fetched,
     updating: store.recipe.updating,
     updated: store.recipe.updated,
+    uploading: store.recipe.uploading,
     imgURL: store.recipe.imgURL
   };
 })(
@@ -102,6 +103,7 @@ const Recipe = connect(store => {
         fetching,
         updating,
         updated,
+        uploading,
         recipeId,
         imgURL
       } = this.props;
@@ -138,11 +140,13 @@ const Recipe = connect(store => {
       let toggleDisable = false;
       let btnUpdateText;
 
-      if (fetching || updating) {
+      if (fetching || updating || uploading) {
         if (fetching) {
           btnUpdateText = 'fetching';
         } else if (updating) {
           btnUpdateText = 'updating';
+        } else if (uploading) {
+          btnUpdateText = 'image uploading';
         }
         toggleDisable = true;
         styleBtnUpdateText = 'btn-warning disable';
@@ -213,14 +217,29 @@ const Recipe = connect(store => {
             </div>
             <div className="col-sm">
               <form id="imgur">
+                {uploading ? (
+                  <label>Uploading</label>
+                ) : (
+                  <label
+                    htmlFor="inputRecipeImg"
+                    type="button"
+                    className="btn btn-block">
+                    Select Image
+                  </label>
+                )}
                 <input
+                  style={{ display: 'none' }}
+                  id="inputRecipeImg"
                   type="file"
                   accept="image/*"
                   data-max-size="5000"
                   onChange={this.onImageUpload}
                 />
               </form>
-              <img className="img-fluid" src={imgURL} alt="img" />
+              {!imgURL ||
+                (imgURL !== '' && (
+                  <img className="img-fluid" src={imgURL} alt="img" />
+                ))}
             </div>
           </div>
         </div>

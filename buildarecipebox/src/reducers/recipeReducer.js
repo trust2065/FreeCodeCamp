@@ -9,7 +9,6 @@ export default (
     updating: false,
     updated: false,
     uploading: false,
-    uploaded: false,
     imgURL: ''
   },
   action
@@ -104,16 +103,14 @@ export default (
       return {
         ...state,
         uploading: false,
-        uploaded: true,
         imgURL: action.payload
       };
     case 'IMG_UPLOAD_REJECT':
+    case 'IMG_UPLOAD_CANCEL':
       return {
         ...state,
-        uploading: false,
-        error: action.payload
+        uploading: false
       };
-
     default:
       return state;
   }

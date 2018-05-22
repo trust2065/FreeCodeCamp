@@ -179,6 +179,10 @@ export function IMG_UPLOAD(e) {
             payload: error
           });
         });
+    } else {
+      dispatch({
+        type: 'IMG_UPLOAD_CANCEL'
+      });
     }
   };
 }
