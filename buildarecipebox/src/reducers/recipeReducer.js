@@ -19,7 +19,17 @@ export default (
 
   switch (action.type) {
     case 'RECIPE_FETCH_PENDING':
-      return { ...state, fetching: true };
+      return {
+        name: '',
+        ingredients: [],
+        steps: [],
+        fetched: false,
+        fetching: true,
+        updating: false,
+        updated: false,
+        uploading: false,
+        imgURL: ''
+      };
     case 'RECIPE_FETCH_FULFILL_NEWRECIPE':
       return {
         ...state,
