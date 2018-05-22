@@ -19,16 +19,16 @@ export default (
   let targetIndex;
 
   switch (action.type) {
-    case 'FETCH_RECIPE_PENDING':
+    case 'RECIPE_FETCH_PENDING':
       return { ...state, fetching: true };
-    case 'FETCH_RECIPE_FULFILL_NEWRECIPE':
+    case 'RECIPE_FETCH_FULFILL_NEWRECIPE':
       return {
         ...state,
         recipeId: action.payload,
         fetching: false,
         fetched: true
       };
-    case 'FETCH_RECIPE_FULFILL':
+    case 'RECIPE_FETCH_FULFILL':
       const recipe = action.payload.recipe;
       const recipeId = action.payload.recipeId;
 
@@ -48,7 +48,7 @@ export default (
         recipeId: recipeId,
         steps: recipe.steps
       };
-    case 'FETCH_RECIPE_REJECT':
+    case 'RECIPE_FETCH_REJECT':
       return { ...state, error: action.payload, fetching: false };
     case 'NAME_CHANGE':
       return { ...state, name: action.payload };
@@ -60,11 +60,11 @@ export default (
       steps = [...state.steps];
       steps[action.payload.order].desp = action.payload.changedText;
       return { ...state, steps: steps };
-    case 'UPDATE_RECIPE_PENDING':
+    case 'RECIPE_UPDATE_PENDING':
       return { ...state, updating: true };
-    case 'UPDATE_RECIPE_FULFILL':
+    case 'RECIPE_UPDATE_FULFILL':
       return { ...state, updating: false, updated: true };
-    case 'UPDATE_RECIPE_REJECT':
+    case 'RECIPE_UPDATE_REJECT':
       return { ...state, updating: false, error: action.payload };
     case 'RESET':
       return { ...state, updated: false };

@@ -2,10 +2,10 @@ import database from '../components/Firebase';
 import RecipeDao from '../components/RecipeDao';
 import axios from 'axios';
 
-export function FETCH_RECIPE(recipeId) {
+export function RECIPE_FETCH(recipeId) {
   return dispatch => {
     dispatch({
-      type: 'FETCH_RECIPE_PENDING'
+      type: 'RECIPE_FETCH_PENDING'
     });
     const recipeRef = database.ref(`recipe/${recipeId}`);
     recipeRef.on(
@@ -16,7 +16,7 @@ export function FETCH_RECIPE(recipeId) {
         // console.log(recipe);
         if (recipe) {
           dispatch({
-            type: 'FETCH_RECIPE_FULFILL',
+            type: 'RECIPE_FETCH_FULFILL',
             payload: { recipe: recipe, recipeId: recipeId }
           });
         } else {
@@ -33,7 +33,7 @@ export function FETCH_RECIPE(recipeId) {
             // set recipeId
             const newRecipeId = parseInt(lastId, 10) + 1;
             dispatch({
-              type: 'FETCH_RECIPE_FULFILL_NEWRECIPE',
+              type: 'RECIPE_FETCH_FULFILL_NEWRECIPE',
               payload: newRecipeId
             });
           });
@@ -41,7 +41,7 @@ export function FETCH_RECIPE(recipeId) {
       },
       function(err) {
         dispatch({
-          type: 'FETCH_RECIPE_REJECT',
+          type: 'RECIPE_FETCH_REJECT',
           payload: err
         });
       }
@@ -49,10 +49,10 @@ export function FETCH_RECIPE(recipeId) {
   };
 }
 
-export function UPDATE_RECIPE(recipeId, name, ingredients, steps, imgURL) {
+export function RECIPE_UPDATE(recipeId, name, ingredients, steps, imgURL) {
   return dispatch => {
     dispatch({
-      type: 'UPDATE_RECIPE_PENDING'
+      type: 'RECIPE_UPDATE_PENDING'
     });
     database
       .ref('recipe/' + recipeId)
@@ -64,12 +64,12 @@ export function UPDATE_RECIPE(recipeId, name, ingredients, steps, imgURL) {
       })
       .then(() => {
         dispatch({
-          type: 'UPDATE_RECIPE_FULFILL'
+          type: 'RECIPE_UPDATE_FULFILL'
         });
       })
       .catch(function(err) {
         dispatch({
-          type: 'UPDATE_RECIPE_REJECT',
+          type: 'RECIPE_UPDATE_REJECT',
           payload: err
         });
       });

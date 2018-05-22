@@ -4,17 +4,17 @@ import React, { Component } from 'react';
 import Ingredient from './Ingredient.js';
 import Step from './Step.js';
 import {
-  FETCH_RECIPE,
-  NAME_CHANGE,
-  INGREDIENT_CHANGE,
-  STEP_CHANGE,
-  UPDATE_RECIPE,
-  RESET,
-  STEP_ADD,
+  IMG_UPLOAD,
   INGREDIENT_ADD,
-  STEP_DELETE,
+  INGREDIENT_CHANGE,
   INGREDIENT_DELETE,
-  IMG_UPLOAD
+  NAME_CHANGE,
+  STEP_ADD,
+  STEP_CHANGE,
+  STEP_DELETE,
+  RECIPE_FETCH,
+  RECIPE_UPDATE,
+  RESET
 } from '../actions/recipeActions';
 
 // let recipeId;
@@ -47,7 +47,7 @@ const Recipe = connect(store => {
     componentDidMount() {
       const recipeId = this.props.match.params.id;
       // console.log('recipe id: ' + recipeId);
-      this.props.dispatch(FETCH_RECIPE(recipeId));
+      this.props.dispatch(RECIPE_FETCH(recipeId));
     }
 
     onAddIngredient() {
@@ -61,7 +61,7 @@ const Recipe = connect(store => {
     onUpdateRecipe() {
       const { recipeId, name, steps, ingredients, imgURL } = this.props;
       this.props.dispatch(
-        UPDATE_RECIPE(recipeId, name, ingredients, steps, imgURL)
+        RECIPE_UPDATE(recipeId, name, ingredients, steps, imgURL)
       );
     }
 
