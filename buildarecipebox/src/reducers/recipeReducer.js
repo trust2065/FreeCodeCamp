@@ -94,6 +94,10 @@ export default (
       });
       return { ...state, steps: steps };
     case 'INGREDIENT_DELETE':
+      targetIndex = action.payload;
+      ingredients = [...state.ingredients];
+      ingredients.splice(targetIndex, 1);
+      return { ...state, ingredients: ingredients };
     case 'IMG_UPLOAD_PENDING':
       return { ...state, uploading: true };
     case 'IMG_UPLOAD_FULFILL':
