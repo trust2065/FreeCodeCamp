@@ -1,5 +1,4 @@
 import $ from 'jquery';
-import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { connect } from 'react-redux';
 import React, { Component } from 'react';
@@ -16,7 +15,8 @@ import {
   INGREDIENT_ADD,
   STEP_DELETE,
   INGREDIENT_DELETE,
-  IMG_CHANGE
+  IMG_CHANGE,
+  IMG_UPLOAD
 } from '../actions/recipeActions';
 
 // let recipeId;
@@ -91,34 +91,7 @@ const Recipe = connect(store => {
     }
 
     onImageUpload(e) {
-      const files = e.target.files;
-      const dataMaxSize = e.target.attributes.getNamedItem('data-max-size')
-        .value;
-
-      if (files.length) {
-        const file = files[0];
-        if (file.size > dataMaxSize * 1024) {
-          console.log('Please select a smaller file');
-          return false;
-        }
-        const apiUrl = 'https://api.imgur.com/3/image';
-        const formData = new FormData();
-        formData.append('image', file);
-
-        axios
-          .post(apiUrl, formData, {
-            headers: {
-              Authorization: 'Bearer 260fc95d35018764d37bf918a786974790e9dcbb'
-            }
-          })
-          .then(response => {
-            const imgURL = response.data.data.link;
-            this.props.dispatch(IMG_CHANGE(imgURL));
-          })
-          .catch(error => {
-            console.log(error);
-          });
-      }
+      this.props.dispatch(IMG_UPLOAD(e));
     }
 
     render() {

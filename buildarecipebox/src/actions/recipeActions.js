@@ -1,5 +1,6 @@
 import database from '../components/Firebase';
 import RecipeDao from '../components/RecipeDao';
+import axios from 'axios';
 
 export function FETCH_RECIPE(recipeId) {
   return dispatch => {
@@ -138,5 +139,46 @@ export function IMG_CHANGE(link) {
   return {
     type: 'IMG_CHANGE',
     payload: link
+  };
+}
+
+export function IMG_UPLOAD(e) {
+  return dispatch => {
+    dispatch({
+      type: 'IMG_UPLOAD_PENDING'
+    });
+    const files = e.target.files;
+    const dataMaxSize = e.target.attributes.getNamedItem('data-max-size').value;
+
+    if (files.length) {
+      const file = files[0];
+      if (file.size > dataMaxSize * 1024) {
+        console.log('Please select a smaller file');
+        return false;
+      }
+      const apiUrl = 'https://api.imgur.com/3/image';
+      const formData = new FormData();
+      formData.append('image', file);
+
+      axios
+        .post(apiUrl, formData, {
+          headers: {
+            Authorization: 'Bearer 260fc95d35018764d37bf918a786974790e9dcbb'
+          }
+        })
+        .then(response => {
+          const imgURL = response.data.data.link;
+          dispatch({
+            type: 'IMG_UPLOAD_FULFILL',
+            payload: imgURL
+          });
+        })
+        .catch(error => {
+          dispatch({
+            type: 'IMG_UPLOAD_REJECT',
+            payload: error
+          });
+        });
+    }
   };
 }
