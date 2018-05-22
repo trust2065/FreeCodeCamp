@@ -92,19 +92,19 @@ const Recipe = connect(store => {
 
     onImageUpload(e) {
       const files = e.target.files;
+      const dataMaxSize = e.target.attributes.getNamedItem('data-max-size')
+        .value;
+
       if (files.length) {
-        // Reject big files
         const file = files[0];
-        if (file.size > $(this).data('max-size') * 1024) {
+        if (file.size > dataMaxSize * 1024) {
           console.log('Please select a smaller file');
           return false;
         }
         const apiUrl = 'https://api.imgur.com/3/image';
-
-        var formData = new FormData();
+        const formData = new FormData();
         formData.append('image', file);
-        const self = this;
-        console.log(self);
+
         axios
           .post(apiUrl, formData, {
             headers: {
@@ -114,7 +114,6 @@ const Recipe = connect(store => {
           .then(response => {
             const imgURL = response.data.data.link;
             this.props.dispatch(IMG_CHANGE(imgURL));
-            // self.props.dispatch(IMG_CHANGE(imgURL));
           })
           .catch(error => {
             console.log(error);
