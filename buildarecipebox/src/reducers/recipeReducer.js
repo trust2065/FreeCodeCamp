@@ -58,14 +58,6 @@ export default (
         steps: recipe.steps
       };
     case 'RECIPE_FETCH_REJECT':
-      return { ...state, error: action.payload, fetching: false };
-    case 'NAME_CHANGE':
-      return { ...state, name: action.payload };
-    case 'INGREDIENT_CHANGE':
-      ingredients = [...state.ingredients];
-      ingredients[action.payload.order].name = action.payload.changedText;
-      return { ...state, ingredients: ingredients };
-    case 'STEP_CHANGE':
       steps = [...state.steps];
       steps[action.payload.order].desp = action.payload.changedText;
       return { ...state, steps: steps };
@@ -74,9 +66,13 @@ export default (
     case 'RECIPE_UPDATE_FULFILL':
       return { ...state, updating: false, updated: true };
     case 'RECIPE_UPDATE_REJECT':
-      return { ...state, updating: false, error: action.payload };
+      return { ...state, error: action.payload, fetching: false };
     case 'RESET':
       return { ...state, updated: false };
+    case 'NAME_CHANGE':
+      return { ...state, name: action.payload };
+    case 'STEP_CHANGE':
+      return { ...state, updating: false, error: action.payload };
     case 'STEP_ADD':
       steps = [...state.steps];
       let newStep;
@@ -87,10 +83,6 @@ export default (
       }
       steps.push({ desp: '', step: newStep });
       return { ...state, steps: steps };
-    case 'INGREDIENT_ADD':
-      ingredients = [...state.ingredients];
-      ingredients.push({ name: '' });
-      return { ...state, ingredients: ingredients };
     case 'STEP_DELETE':
       targetIndex = action.payload;
       steps = [...state.steps];
@@ -102,6 +94,14 @@ export default (
         return step;
       });
       return { ...state, steps: steps };
+    case 'INGREDIENT_CHANGE':
+      ingredients = [...state.ingredients];
+      ingredients[action.payload.order].name = action.payload.changedText;
+      return { ...state, ingredients: ingredients };
+    case 'INGREDIENT_ADD':
+      ingredients = [...state.ingredients];
+      ingredients.push({ name: '' });
+      return { ...state, ingredients: ingredients };
     case 'INGREDIENT_DELETE':
       targetIndex = action.payload;
       ingredients = [...state.ingredients];
