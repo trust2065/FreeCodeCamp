@@ -244,12 +244,7 @@ const Recipe = connect(store => {
             </div>
             <div className="col-sm">
               <form id="imgur">
-                <input
-                  type="file"
-                  class="imgur"
-                  accept="image/*"
-                  data-max-size="5000"
-                />
+                <input type="file" accept="image/*" data-max-size="5000" />
               </form>
               <img className="img-fluid" src={imgURL} alt="img" />
             </div>
