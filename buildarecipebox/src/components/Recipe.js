@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { connect } from 'react-redux';
 import React, { Component } from 'react';
@@ -15,7 +14,6 @@ import {
   INGREDIENT_ADD,
   STEP_DELETE,
   INGREDIENT_DELETE,
-  IMG_CHANGE,
   IMG_UPLOAD
 } from '../actions/recipeActions';
 
