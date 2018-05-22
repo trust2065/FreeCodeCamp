@@ -40,17 +40,16 @@ const Recipe = connect(store => {
       this.onAddIngredient = this.onAddIngredient.bind(this);
       this.onAddStep = this.onAddStep.bind(this);
       this.onUpdateRecipe = this.onUpdateRecipe.bind(this);
+      this.onImageUpload = this.onImageUpload.bind(this);
       this.handleNameChange = this.handleNameChange.bind(this);
       this.handleIngredientChange = this.handleIngredientChange.bind(this);
       this.handleStepChange = this.handleStepChange.bind(this);
-      this.onImageUpload = this.onImageUpload.bind(this);
     }
 
     componentDidMount() {
       const recipeId = this.props.match.params.id;
       // console.log('recipe id: ' + recipeId);
       this.props.dispatch(FETCH_RECIPE(recipeId));
-      this.onImageUpload();
     }
 
     onAddIngredient() {
@@ -91,36 +90,36 @@ const Recipe = connect(store => {
       this.props.dispatch(INGREDIENT_DELETE(i));
     }
 
-    onImageUpload() {
-      const self = this;
-      $('input[type=file]').on('change', function() {
-        var $files = $(this).get(0).files;
-        if ($files.length) {
-          // Reject big files
-          if ($files[0].size > $(this).data('max-size') * 1024) {
-            console.log('Please select a smaller file');
-            return false;
-          }
-          const apiUrl = 'https://api.imgur.com/3/image';
-
-          var formData = new FormData();
-          formData.append('image', $files[0]);
-
-          axios
-            .post(apiUrl, formData, {
-              headers: {
-                Authorization: 'Bearer 260fc95d35018764d37bf918a786974790e9dcbb'
-              }
-            })
-            .then(function(response) {
-              const imgURL = response.data.data.link;
-              self.props.dispatch(IMG_CHANGE(imgURL));
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
+    onImageUpload(e) {
+      const files = e.target.files;
+      if (files.length) {
+        // Reject big files
+        const file = files[0];
+        if (file.size > $(this).data('max-size') * 1024) {
+          console.log('Please select a smaller file');
+          return false;
         }
-      });
+        const apiUrl = 'https://api.imgur.com/3/image';
+
+        var formData = new FormData();
+        formData.append('image', file);
+        const self = this;
+        console.log(self);
+        axios
+          .post(apiUrl, formData, {
+            headers: {
+              Authorization: 'Bearer 260fc95d35018764d37bf918a786974790e9dcbb'
+            }
+          })
+          .then(response => {
+            const imgURL = response.data.data.link;
+            this.props.dispatch(IMG_CHANGE(imgURL));
+            // self.props.dispatch(IMG_CHANGE(imgURL));
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }
     }
 
     render() {
@@ -244,7 +243,12 @@ const Recipe = connect(store => {
             </div>
             <div className="col-sm">
               <form id="imgur">
-                <input type="file" accept="image/*" data-max-size="5000" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  data-max-size="5000"
+                  onChange={this.onImageUpload}
+                />
               </form>
               <img className="img-fluid" src={imgURL} alt="img" />
             </div>
