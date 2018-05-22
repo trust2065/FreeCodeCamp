@@ -49,7 +49,7 @@ export function RECIPE_FETCH(recipeId) {
   };
 }
 
-export function RECIPE_UPDATE(recipeId, name, ingredients, steps, imgURL) {
+export function RECIPE_UPDATE(recipeId, name, ingredients, steps, imgURL = '') {
   return dispatch => {
     dispatch({
       type: 'RECIPE_UPDATE_PENDING'
