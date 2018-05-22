@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { connect } from 'react-redux';
 import React, { Component } from 'react';
@@ -102,28 +103,22 @@ const Recipe = connect(store => {
           }
           const apiUrl = 'https://api.imgur.com/3/image';
 
-          const settings = {
-            async: false,
-            crossDomain: true,
-            processData: false,
-            contentType: false,
-            type: 'POST',
-            url: apiUrl,
-            headers: {
-              Authorization: 'Bearer 260fc95d35018764d37bf918a786974790e9dcbb'
-            },
-            mimeType: 'multipart/form-data'
-          };
-
           var formData = new FormData();
           formData.append('image', $files[0]);
-          settings.data = formData;
 
-          $.ajax(settings).done(function(response) {
-            response = JSON.parse(response);
-            console.log(response.data.link);
-            self.props.dispatch(IMG_CHANGE(response.data.link));
-          });
+          axios
+            .post(apiUrl, formData, {
+              headers: {
+                Authorization: 'Bearer 260fc95d35018764d37bf918a786974790e9dcbb'
+              }
+            })
+            .then(function(response) {
+              const imgURL = response.data.data.link;
+              self.props.dispatch(IMG_CHANGE(imgURL));
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
         }
       });
     }
