@@ -14,7 +14,7 @@ import {
   stepDelete,
   recipeFetch,
   recipeUpdate,
-  Reset
+  reset
 } from '../reducers/recipeReducer';
 
 // let recipeId;
@@ -155,7 +155,7 @@ const Recipe = connect(store => {
         toggleDisable = true;
         styleBtnUpdateText = 'btn-success disable';
         setTimeout(() => {
-          this.props.dispatch(Reset());
+          this.props.dispatch(reset());
         }, 2000);
       } else {
         btnUpdateText = 'update';

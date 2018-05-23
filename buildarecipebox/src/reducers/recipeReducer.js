@@ -157,7 +157,7 @@ export function recipeUpdate(recipeId, name, ingredients, steps, imgURL = '') {
   };
 }
 
-export const Reset = createAction('RESET');
+export const reset = createAction('RESET');
 
 const defaultState = {
   recipeId: 0,
