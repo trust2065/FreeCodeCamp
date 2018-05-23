@@ -67,8 +67,8 @@ export default (
       return { ...state, error: action.payload, fetching: false };
     case 'RESET':
       return { ...state, updated: false };
-    case 'NAME_CHANGE':
-      return { ...state, name: action.payload };
+    // case 'NAME_CHANGE':
+    //   return { ...state, name: action.payload };
     case 'STEP_CHANGE':
       steps = [...state.steps];
       steps[action.payload.order].desp = action.payload.changedText;

@@ -8,7 +8,7 @@ import {
   INGREDIENT_ADD,
   INGREDIENT_CHANGE,
   INGREDIENT_DELETE,
-  NAME_CHANGE,
+  // NAME_CHANGE,
   STEP_ADD,
   STEP_CHANGE,
   STEP_DELETE,
@@ -16,6 +16,7 @@ import {
   RECIPE_UPDATE,
   RESET
 } from '../actions/recipeActions';
+import { NAME_CHANGE } from '../reducers';
 
 // let recipeId;
 const Recipe = connect(store => {
@@ -23,7 +24,7 @@ const Recipe = connect(store => {
     recipeId: store.recipe.recipeId,
     steps: store.recipe.steps,
     ingredients: store.recipe.ingredients,
-    name: store.recipe.name,
+    name: store.reducer.name,
     fetching: store.recipe.fetching,
     fetched: store.recipe.fetched,
     updating: store.recipe.updating,
