@@ -3,20 +3,31 @@ import { connect } from 'react-redux';
 import React, { Component } from 'react';
 import Ingredient from './Ingredient.js';
 import Step from './Step.js';
+import // IMG_UPLOAD,
+// INGREDIENT_ADD,
+// INGREDIENT_CHANGE,
+// INGREDIENT_DELETE,
+// NAME_CHANGE,
+// STEP_ADD,
+// STEP_CHANGE,
+// STEP_DELETE,
+// RECIPE_FETCH,
+// RECIPE_UPDATE
+// RESET
+'../actions/recipeActions';
 import {
   IMG_UPLOAD,
   INGREDIENT_ADD,
   INGREDIENT_CHANGE,
   INGREDIENT_DELETE,
-  // NAME_CHANGE,
+  NAME_CHANGE,
   STEP_ADD,
   STEP_CHANGE,
   STEP_DELETE,
   RECIPE_FETCH,
   RECIPE_UPDATE,
   RESET
-} from '../actions/recipeActions';
-import { NAME_CHANGE } from '../reducers';
+} from '../reducers/recipeReducer';
 
 // let recipeId;
 const Recipe = connect(store => {
@@ -24,7 +35,7 @@ const Recipe = connect(store => {
     recipeId: store.recipe.recipeId,
     steps: store.recipe.steps,
     ingredients: store.recipe.ingredients,
-    name: store.reducer.name,
+    name: store.recipe.name,
     fetching: store.recipe.fetching,
     fetched: store.recipe.fetched,
     updating: store.recipe.updating,
