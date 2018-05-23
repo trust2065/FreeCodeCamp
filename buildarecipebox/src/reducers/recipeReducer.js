@@ -9,20 +9,20 @@ import RecipeDao from '../components/RecipeDao';
 import axios from 'axios';
 
 const {
-  IMG_UPLOAD_PENDING,
-  IMG_UPLOAD_FULFILL,
+  imgUploadPending,
+  imgUploadFulfill,
   imgUploadReject,
   imgUploadCancel
 } = createActions(
   'IMG_UPLOAD_PENDING',
   'IMG_UPLOAD_FULFILL',
-  'imgUploadReject',
-  'imgUploadCancel'
+  'IMG_UPLOAD_REJECT',
+  'IMG_UPLOAD_CANCEL'
 );
 
-export function IMG_UPLOAD(e) {
+export function imgUpload(e) {
   return dispatch => {
-    dispatch(IMG_UPLOAD_PENDING());
+    dispatch(imgUploadPending());
     const files = e.target.files;
     const dataMaxSize = e.target.attributes.getNamedItem('data-max-size').value;
 
@@ -44,7 +44,7 @@ export function IMG_UPLOAD(e) {
         })
         .then(response => {
           const imgURL = response.data.data.link;
-          dispatch(IMG_UPLOAD_FULFILL(imgURL));
+          dispatch(imgUploadFulfill(imgURL));
         })
         .catch(error => {
           dispatch(imgUploadReject());
@@ -55,37 +55,45 @@ export function IMG_UPLOAD(e) {
   };
 }
 
-export const INGREDIENT_ADD = createAction('INGREDIENT_ADD');
-
-export const INGREDIENT_CHANGE = createAction(
-  'INGREDIENT_CHANGE',
-  (order, changedText) => ({ order, changedText })
+export const {
+  ingredientAdd,
+  ingredientChange,
+  ingredientDelete
+} = createActions(
+  {
+    INGREDIENT_CHANGE: (order, changedText) => ({ order, changedText })
+  },
+  'INGREDIENT_ADD',
+  'INGREDIENT_DELETE'
 );
 
-export const INGREDIENT_DELETE = createAction('INGREDIENT_DELETE', i => i);
+export const nameChange = createAction('NAME_CHANGE');
 
-export const NAME_CHANGE = createAction('NAME_CHANGE');
-
-export const STEP_ADD = createAction('STEP_ADD');
-export const STEP_CHANGE = createAction(
-  'STEP_CHANGE',
-  (order, changedText) => ({ order, changedText })
-);
-export const STEP_DELETE = createAction('STEP_DELETE', i => i);
-
-const RECIPE_FETCH_PENDING = createAction('RECIPE_FETCH_PENDING');
-const RECIPE_FETCH_FULFILL = createAction(
-  'RECIPE_FETCH_FULFILL',
-  (recipe, recipeId) => ({ recipe, recipeId })
-);
-const RECIPE_FETCH_FULFILL_NEWRECIPE = createAction(
-  'RECIPE_FETCH_FULFILL_NEWRECIPE',
-  newRecipeId => newRecipeId
+export const { stepAdd, stepChange, stepDelete } = createActions(
+  {
+    STEP_CHANGE: (order, changedText) => ({ order, changedText })
+  },
+  'STEP_ADD',
+  'STEP_DELETE'
 );
 
-export function RECIPE_FETCH(recipeId) {
+export const {
+  recipeFetchPending,
+  recipeFetchFulfill,
+  recipeFetchFulfillNewrecipe,
+  recipeFetctReject
+} = createActions(
+  {
+    RECIPE_FETCH_FULFILL: (recipe, recipeId) => ({ recipe, recipeId })
+  },
+  'RECIPE_FETCH_PENDING',
+  'RECIPE_FETCH_REJECT',
+  'RECIPE_FETCH_FULFILL_NEWRECIPE'
+);
+
+export function recipeFetch(recipeId) {
   return dispatch => {
-    dispatch(RECIPE_FETCH_PENDING());
+    dispatch(recipeFetchPending());
     const recipeRef = database.ref(`recipe/${recipeId}`);
     recipeRef.on(
       'value',
@@ -94,7 +102,7 @@ export function RECIPE_FETCH(recipeId) {
         // console.log('recipe');
         // console.log(recipe);
         if (recipe) {
-          dispatch(RECIPE_FETCH_FULFILL(recipe, recipeId));
+          dispatch(recipeFetchFulfill(recipe, recipeId));
         } else {
           // get last id
           let lastId = 0;
@@ -108,33 +116,30 @@ export function RECIPE_FETCH(recipeId) {
             // console.log(`lastId: ${lastId}`);
             // set recipeId
             const newRecipeId = parseInt(lastId, 10) + 1;
-            dispatch(RECIPE_FETCH_FULFILL_NEWRECIPE(newRecipeId));
+            dispatch(recipeFetchFulfillNewrecipe(newRecipeId));
           });
         }
       },
       function(err) {
-        dispatch({
-          type: 'RECIPE_FETCH_REJECT',
-          payload: err
-        });
+        dispatch(recipeFetctReject(err));
       }
     );
   };
 }
 
 const {
-  RECIPE_UPDATE_PENDING,
-  RECIPE_UPDATE_FULFILL,
-  RECIPE_UPDATE_REJECT
+  recipeUpdatePending,
+  recipeUpdateFulfill,
+  recipeUpdateReject
 } = createActions(
   'RECIPE_UPDATE_PENDING',
   'RECIPE_UPDATE_FULFILL',
   'RECIPE_UPDATE_REJECT'
 );
 
-export function RECIPE_UPDATE(recipeId, name, ingredients, steps, imgURL = '') {
+export function recipeUpdate(recipeId, name, ingredients, steps, imgURL = '') {
   return dispatch => {
-    dispatch(RECIPE_UPDATE_PENDING());
+    dispatch(recipeUpdatePending());
     database
       .ref('recipe/' + recipeId)
       .update({
@@ -144,15 +149,15 @@ export function RECIPE_UPDATE(recipeId, name, ingredients, steps, imgURL = '') {
         imgURL: imgURL
       })
       .then(() => {
-        dispatch(RECIPE_UPDATE_FULFILL());
+        dispatch(recipeUpdateFulfill());
       })
       .catch(function(err) {
-        dispatch(RECIPE_UPDATE_REJECT());
+        dispatch(recipeUpdateReject());
       });
   };
 }
 
-export const RESET = createAction('RESET');
+export const Reset = createAction('RESET');
 
 const defaultState = {
   recipeId: 0,

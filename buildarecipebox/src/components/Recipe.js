@@ -3,30 +3,18 @@ import { connect } from 'react-redux';
 import React, { Component } from 'react';
 import Ingredient from './Ingredient.js';
 import Step from './Step.js';
-import // IMG_UPLOAD,
-// INGREDIENT_ADD,
-// INGREDIENT_CHANGE,
-// INGREDIENT_DELETE,
-// NAME_CHANGE,
-// STEP_ADD,
-// STEP_CHANGE,
-// STEP_DELETE,
-// RECIPE_FETCH,
-// RECIPE_UPDATE
-// RESET
-'../actions/recipeActions';
 import {
-  IMG_UPLOAD,
-  INGREDIENT_ADD,
-  INGREDIENT_CHANGE,
-  INGREDIENT_DELETE,
-  NAME_CHANGE,
-  STEP_ADD,
-  STEP_CHANGE,
-  STEP_DELETE,
-  RECIPE_FETCH,
-  RECIPE_UPDATE,
-  RESET
+  imgUpload,
+  ingredientAdd,
+  ingredientChange,
+  ingredientDelete,
+  nameChange,
+  stepAdd,
+  stepChange,
+  stepDelete,
+  recipeFetch,
+  recipeUpdate,
+  Reset
 } from '../reducers/recipeReducer';
 
 // let recipeId;
@@ -60,49 +48,49 @@ const Recipe = connect(store => {
     componentDidMount() {
       const recipeId = this.props.match.params.id;
       // console.log('recipe id: ' + recipeId);
-      this.props.dispatch(RECIPE_FETCH(recipeId));
+      this.props.dispatch(recipeFetch(recipeId));
     }
 
     onAddIngredient() {
-      this.props.dispatch(INGREDIENT_ADD());
+      this.props.dispatch(ingredientAdd());
     }
 
     onAddStep() {
-      this.props.dispatch(STEP_ADD());
+      this.props.dispatch(stepAdd());
     }
 
     onUpdateRecipe() {
       const { recipeId, name, steps, ingredients, imgURL } = this.props;
       this.props.dispatch(
-        RECIPE_UPDATE(recipeId, name, ingredients, steps, imgURL)
+        recipeUpdate(recipeId, name, ingredients, steps, imgURL)
       );
     }
 
     handleIngredientChange(e, i) {
       const changedText = e.target.value;
-      this.props.dispatch(INGREDIENT_CHANGE(i, changedText));
+      this.props.dispatch(ingredientChange(i, changedText));
     }
 
     handleStepChange(e, i) {
       const changedText = e.target.value;
-      this.props.dispatch(STEP_CHANGE(i, changedText));
+      this.props.dispatch(stepChange(i, changedText));
     }
 
     handleNameChange(e) {
-      this.props.dispatch(NAME_CHANGE(e.target.value));
+      this.props.dispatch(nameChange(e.target.value));
     }
 
     handleStepDelete(i) {
-      this.props.dispatch(STEP_DELETE(i));
+      this.props.dispatch(stepDelete(i));
     }
 
     handleIngredientDelete(i) {
       // console.log('delete: ' + i);
-      this.props.dispatch(INGREDIENT_DELETE(i));
+      this.props.dispatch(ingredientDelete(i));
     }
 
     onImageUpload(e) {
-      this.props.dispatch(IMG_UPLOAD(e));
+      this.props.dispatch(imgUpload(e));
     }
 
     render() {
@@ -167,7 +155,7 @@ const Recipe = connect(store => {
         toggleDisable = true;
         styleBtnUpdateText = 'btn-success disable';
         setTimeout(() => {
-          this.props.dispatch(RESET());
+          this.props.dispatch(Reset());
         }, 2000);
       } else {
         btnUpdateText = 'update';
