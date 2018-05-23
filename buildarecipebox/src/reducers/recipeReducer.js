@@ -58,9 +58,7 @@ export default (
         steps: recipe.steps
       };
     case 'RECIPE_FETCH_REJECT':
-      steps = [...state.steps];
-      steps[action.payload.order].desp = action.payload.changedText;
-      return { ...state, steps: steps };
+      return { ...state, updating: false, error: action.payload };
     case 'RECIPE_UPDATE_PENDING':
       return { ...state, updating: true };
     case 'RECIPE_UPDATE_FULFILL':
@@ -72,7 +70,9 @@ export default (
     case 'NAME_CHANGE':
       return { ...state, name: action.payload };
     case 'STEP_CHANGE':
-      return { ...state, updating: false, error: action.payload };
+      steps = [...state.steps];
+      steps[action.payload.order].desp = action.payload.changedText;
+      return { ...state, steps: steps };
     case 'STEP_ADD':
       steps = [...state.steps];
       let newStep;
