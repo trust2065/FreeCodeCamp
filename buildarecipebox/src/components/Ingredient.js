@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import PropTypes from 'prop-types';
-import { Button } from '../components';
+import { Button } from './utility';
 
 class Ingredient extends Component {
   static propTypes = {
