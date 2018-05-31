@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import React, { Component } from 'react';
 import Ingredient from './Ingredient.js';
 import Step from './Step.js';
+import { Link } from 'react-router-dom';
 import {
   imgUpload,
   ingredientAdd,
@@ -216,6 +217,13 @@ const Recipe = connect(store => {
               </div>
             </div>
             <div className="col-sm">
+              <Link to="/recipe/history/create">
+                <button
+                  className="btn btn-block mb-4"
+                  onClick={this.onAddRecipeHistory}>
+                  Add Recipe
+                </button>
+              </Link>
               <form id="imgur">
                 {uploading ? (
                   <label>Uploading</label>

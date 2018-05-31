@@ -4,6 +4,7 @@ import './css/Recipe.css';
 // import App from "./components/App";
 import Recipe from './components/Recipe';
 import Home from './components/Home';
+import HistoryCreate from './components/HistoryCreate';
 import Header from './components/Header';
 import registerServiceWorker from './registerServiceWorker';
 import {
@@ -26,6 +27,11 @@ ReactDOM.render(
         <Switch>
           <Route exact path="/" component={Home} />
           <Route exact path="/recipe/:id" component={Recipe} />
+          <Route
+            exact
+            path="/recipe/history/create"
+            component={HistoryCreate}
+          />
           <Route>
             <Redirect to="/" />
           </Route>
