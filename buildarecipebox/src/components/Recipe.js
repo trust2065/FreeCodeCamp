@@ -221,7 +221,7 @@ const Recipe = connect(store => {
                 <button
                   className="btn btn-block mb-4"
                   onClick={this.onAddRecipeHistory}>
-                  Add Recipe
+                  Add History
                 </button>
               </Link>
               <form id="imgur">
