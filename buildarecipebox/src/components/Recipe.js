@@ -34,65 +34,53 @@ const Recipe = connect(store => {
   };
 })(
   class Recipe extends Component {
-    constructor(props) {
-      super(props);
-
-      this.onAddIngredient = this.onAddIngredient.bind(this);
-      this.onAddStep = this.onAddStep.bind(this);
-      this.onUpdateRecipe = this.onUpdateRecipe.bind(this);
-      this.onImageUpload = this.onImageUpload.bind(this);
-      this.handleNameChange = this.handleNameChange.bind(this);
-      this.handleIngredientChange = this.handleIngredientChange.bind(this);
-      this.handleStepChange = this.handleStepChange.bind(this);
-    }
-
     componentDidMount() {
       const recipeId = this.props.match.params.id;
       // console.log('recipe id: ' + recipeId);
       this.props.dispatch(recipeFetch(recipeId));
     }
 
-    onAddIngredient() {
+    handleAddIngredient = () => {
       this.props.dispatch(ingredientAdd());
-    }
+    };
 
-    onAddStep() {
+    handleAddStep = () => {
       this.props.dispatch(stepAdd());
-    }
+    };
 
-    onUpdateRecipe() {
+    handleUpdateRecipe = () => {
       const { recipeId, name, steps, ingredients, imgURL } = this.props;
       this.props.dispatch(
         recipeUpdate(recipeId, name, ingredients, steps, imgURL)
       );
-    }
+    };
 
-    handleIngredientChange(e, i) {
+    handleIngredientChange = (e, i) => {
       const changedText = e.target.value;
       this.props.dispatch(ingredientChange(i, changedText));
-    }
+    };
 
-    handleStepChange(e, i) {
+    handleStepChange = (e, i) => {
       const changedText = e.target.value;
       this.props.dispatch(stepChange(i, changedText));
-    }
+    };
 
-    handleNameChange(e) {
+    handleNameChange = e => {
       this.props.dispatch(nameChange(e.target.value));
-    }
+    };
 
-    handleStepDelete(i) {
+    handleStepDelete = i => {
       this.props.dispatch(stepDelete(i));
-    }
+    };
 
-    handleIngredientDelete(i) {
+    handleIngredientDelete = i => {
       // console.log('delete: ' + i);
       this.props.dispatch(ingredientDelete(i));
-    }
+    };
 
-    onImageUpload(e) {
+    handleImageUpload = e => {
       this.props.dispatch(imgUpload(e));
-    }
+    };
 
     render() {
       // console.log('render Recipe');
@@ -195,14 +183,16 @@ const Recipe = connect(store => {
                   {ingredientsRow}
                   <button
                     className="btn btn-block"
-                    onClick={this.onAddIngredient}>
+                    onClick={this.handleAddIngredient}>
                     Add
                   </button>
                 </div>
                 <div className="form-group">
                   <p>Steps</p>
                   {stepsRow}
-                  <button className="btn btn-block" onClick={this.onAddStep}>
+                  <button
+                    className="btn btn-block"
+                    onClick={this.handleAddStep}>
                     Add
                   </button>
                 </div>
@@ -211,7 +201,7 @@ const Recipe = connect(store => {
                 <button
                   disabled={toggleDisable}
                   className={`btn btn-block ${styleBtnUpdateText}`}
-                  onClick={this.onUpdateRecipe}>
+                  onClick={this.handleUpdateRecipe}>
                   {btnUpdateText}
                 </button>
               </div>
@@ -237,7 +227,7 @@ const Recipe = connect(store => {
                   type="file"
                   accept="image/*"
                   data-max-size="5000"
-                  onChange={this.onImageUpload}
+                  onChange={this.handleImageUpload}
                 />
               </form>
               {!imgURL ||

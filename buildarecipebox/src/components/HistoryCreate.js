@@ -25,44 +25,44 @@ const HistoryCreate = connect(store => {
   };
 })(
   class HistoryCreate extends Component {
-    constructor(props) {
-      super(props);
-      this.onAddImageUploader = this.onAddImageUploader.bind(this);
-      this.onImageUpload = this.onImageUpload.bind(this);
-      this.onDateChange = this.onDateChange.bind(this);
-      this.onRemarkChange = this.onRemarkChange.bind(this);
-      this.onHistoryUpdate = this.onHistoryUpdate.bind(this);
-    }
+    // constructor(props) {
+    //   super(props);
+    //   this.onAddImageUploader = this.handleAddImageUploader.bind(this);
+    //   this.onImageUpload = this.handleImageUpload.bind(this);
+    //   this.onDateChange = this.handleDateChange.bind(this);
+    //   this.onRemarkChange = this.handleRemarkChange.bind(this);
+    //   this.onHistoryUpdate = this.handleHistoryUpdate.bind(this);
+    // }
 
-    componentDidMount() {
+    componentDidMount = () => {
       const recipeId = this.props.match.params.id;
       this.props.dispatch(recipeFetch(recipeId));
-    }
+    };
 
-    onDateChange(e) {
+    handleDateChange = e => {
       const value = e.target.value;
       this.props.dispatch(historyDateChange(value));
-    }
+    };
 
-    onRemarkChange(e) {
+    handleRemarkChange = e => {
       const value = e.target.value;
       this.props.dispatch(historyRemarkChange(value));
-    }
+    };
 
-    onHistoryUpdate() {
+    handleHistoryUpdate = () => {
       const { recipeId } = this.props;
       const history = this.props.history;
       this.props.dispatch(historyUpdate(recipeId, history));
-    }
+    };
 
-    onAddImageUploader() {
+    handleAddImageUploader = () => {
       this.props.dispatch(imgUploaderAdd('History'));
-    }
+    };
 
-    onImageUpload(e, no) {
+    handleImageUpload = (e, no) => {
       console.log('onImageUpload');
       this.props.dispatch(imgUpload(e, 'History', no));
-    }
+    };
 
     render() {
       const {
@@ -120,7 +120,7 @@ const HistoryCreate = connect(store => {
                 url={url}
                 disabled={toggleDisable}
                 uploading={uploading}
-                onImageUpload={e => this.onImageUpload(e, no)}
+                onImageUpload={e => this.handleImageUpload(e, no)}
               />
             </div>
           );
@@ -133,7 +133,7 @@ const HistoryCreate = connect(store => {
               <button
                 disabled={toggleDisable}
                 className={`btn btn-block ${styleBtnUpdateText}`}
-                onClick={this.onHistoryUpdate}>
+                onClick={this.handleHistoryUpdate}>
                 {btnUpdateText}
               </button>
             </div>
@@ -154,7 +154,7 @@ const HistoryCreate = connect(store => {
                 <input
                   type="text"
                   value={date}
-                  onChange={this.onDateChange}
+                  onChange={this.handleDateChange}
                   className="form-control"
                 />
               </div>
@@ -167,7 +167,7 @@ const HistoryCreate = connect(store => {
                   rows="5"
                   id="comment"
                   value={remark}
-                  onChange={this.onRemarkChange}>
+                  onChange={this.handleRemarkChange}>
                   />
                 </TextArea>
               </div>
@@ -177,7 +177,7 @@ const HistoryCreate = connect(store => {
             <div className="col-sm-4 mr-auto">
               <button
                 className="btn bnt-block"
-                onClick={this.onAddImageUploader}>
+                onClick={this.handleAddImageUploader}>
                 Add Image
               </button>
             </div>
