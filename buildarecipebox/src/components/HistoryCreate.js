@@ -10,9 +10,9 @@ import {
 
 const HistoryCreate = connect(store => {
   return {
+    name: store.recipe.name,
     history: store.recipe.history,
-    recipeId: store.recipe.recipeId,
-    imgURLHistory: store.recipe.imgURLHistory
+    recipeId: store.recipe.recipeId
   };
 })(
   class HistoryCreate extends Component {
@@ -41,8 +41,9 @@ const HistoryCreate = connect(store => {
     }
 
     render() {
+      const { name } = this.props;
       const latestHistory = this.props.history[this.props.history.length - 1];
-      const { name, date, remark, image } = latestHistory;
+      const { date, remark, image } = latestHistory;
 
       const imageUploaders = [];
 
