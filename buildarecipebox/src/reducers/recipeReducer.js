@@ -348,21 +348,27 @@ const reducer = handleActions(
     IMG_UPLOAD_PENDING: (state, action) => ({ ...state, uploading: true }),
     IMG_UPLOAD_FULFILL: (state, action) => {
       const { type, no, url } = action.payload;
-      const history = [...state.history];
-      const latestHistory = history[history.length - 1];
-      let image = latestHistory.image;
 
       if (type === 'History') {
         if (no) {
+          const history = [...state.history];
+          const latestHistory = history[history.length - 1];
+          let image = latestHistory.image;
+
           image[no - 1].url = url;
-          history.image = image;
+          latestHistory.image = image;
+
+          return {
+            ...state,
+            uploading: false,
+            history: history
+          };
         }
       }
       return {
         ...state,
         uploading: false,
-        imgURL: url,
-        history: history
+        imgURL: url
       };
     },
     [combineActions(imgUploadReject, imgUploadCancel)](state, action) {
