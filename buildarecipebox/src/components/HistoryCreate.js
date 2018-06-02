@@ -3,7 +3,10 @@ import ImageUploader from './ImageUploader';
 import { TextArea } from './utility';
 import { connect } from 'react-redux';
 import {
-  historyAdd,
+  recipeFetch,
+  historyUpdate,
+  historyDateChange,
+  historyRemarkChange,
   imgUploaderAdd,
   imgUpload
 } from '../reducers/recipeReducer';
@@ -20,6 +23,9 @@ const HistoryCreate = connect(store => {
       super(props);
       this.onAddImageUploader = this.onAddImageUploader.bind(this);
       this.onImageUpload = this.onImageUpload.bind(this);
+      this.onDateChange = this.onDateChange.bind(this);
+      this.onRemarkChange = this.onRemarkChange.bind(this);
+      this.onHistoryUpdate = this.onHistoryUpdate.bind(this);
     }
 
     componentDidMount() {
@@ -27,9 +33,21 @@ const HistoryCreate = connect(store => {
       this.props.dispatch(recipeFetch(recipeId));
     }
 
-    onRemarkChange(e) {}
+    onDateChange(e) {
+      const value = e.target.value;
+      this.props.dispatch(historyDateChange(value));
+    }
 
-    onUpdateRecipeHistory() {}
+    onRemarkChange(e) {
+      const value = e.target.value;
+      this.props.dispatch(historyRemarkChange(value));
+    }
+
+    onHistoryUpdate() {
+      const { recipeId } = this.props;
+      const history = this.props.history;
+      this.props.dispatch(historyUpdate(recipeId, history));
+    }
 
     onAddImageUploader() {
       this.props.dispatch(imgUploaderAdd('History'));
@@ -41,37 +59,38 @@ const HistoryCreate = connect(store => {
     }
 
     render() {
-      const { name } = this.props;
-      const latestHistory = this.props.history[this.props.history.length - 1];
+      const { name, history } = this.props;
+
+      const latestHistory = history[history.length - 1];
       const { date, remark, image } = latestHistory;
 
       const imageUploaders = [];
 
-      image.forEach(image => {
-        const no = image.no;
-        const url = image.url;
-        imageUploaders.push(
-          <div
-            key={`imageUploader_${no}`}
-            className="col-sm-4"
-            style={{ minHeight: '15vw' }}>
-            <ImageUploader
-              no={no}
-              url={url}
-              onImageUpload={e => this.onImageUpload(e, no)}
-            />
-          </div>
-        );
-      });
+      image &&
+        image.length > 0 &&
+        image.forEach(image => {
+          const no = image.no;
+          const url = image.url;
+          imageUploaders.push(
+            <div
+              key={`imageUploader_${no}`}
+              className="col-sm-4"
+              style={{ minHeight: '15vw' }}>
+              <ImageUploader
+                no={no}
+                url={url}
+                onImageUpload={e => this.onImageUpload(e, no)}
+              />
+            </div>
+          );
+        });
 
       return (
         <div className="container">
           <div className="row">
             <div className="col-sm-4 ml-auto">
-              <button
-                className="btn btn-block"
-                onClick={this.onUpdateRecipeHistory}>
-                Save
+              <button className="btn btn-block" onClick={this.onHistoryUpdate}>
+                Update
               </button>
             </div>
           </div>

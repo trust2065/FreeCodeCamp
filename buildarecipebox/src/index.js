@@ -29,7 +29,7 @@ ReactDOM.render(
           <Route exact path="/recipe/:id" component={Recipe} />
           <Route
             exact
-            path="/recipe/history/create"
+            path="/recipe/:id/history/create"
             component={HistoryCreate}
           />
           <Route>

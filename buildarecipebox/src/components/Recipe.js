@@ -217,7 +217,7 @@ const Recipe = connect(store => {
               </div>
             </div>
             <div className="col-sm">
-              <Link to="/recipe/history/create">
+              <Link to={`/recipe/${recipeId}/history/create`}>
                 <button className="btn btn-block mb-4">Add History</button>
               </Link>
               <form id="imgur">

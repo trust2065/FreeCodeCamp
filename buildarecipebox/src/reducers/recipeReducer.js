@@ -163,7 +163,42 @@ export function recipeUpdate(recipeId, name, ingredients, steps, imgURL = '') {
 
 export const reset = createAction('RESET');
 
-export const historyAdd = createAction('HISTORY_ADD');
+export const {
+  historyAdd,
+  historyDateChange,
+  historyRemarkChange
+} = createActions(
+  'HISTORY_ADD',
+  'HISTORY_REMARK_CHANGE',
+  'HISTORY_DATE_CHANGE'
+);
+
+const {
+  historyUpdatePending,
+  historyUpdateFulfill,
+  historyUpdateReject
+} = createActions(
+  'HISTORY_UPDATE_PENDING',
+  'HISTORY_UPDATE_FULFILL',
+  'HISTORY_UPDATE_REJECT'
+);
+
+export function historyUpdate(recipeId, history) {
+  return dispatch => {
+    dispatch(historyUpdatePending());
+    database
+      .ref('recipe/' + recipeId)
+      .update({
+        history: history
+      })
+      .then(() => {
+        dispatch(historyUpdateFulfill());
+      })
+      .catch(function(err) {
+        dispatch(historyUpdateReject());
+      });
+  };
+}
 
 const defaultState = {
   recipeId: 0,
@@ -176,7 +211,7 @@ const defaultState = {
   updated: false,
   uploading: false,
   imgURL: '',
-  history: [{ date: 'd', remark: '', image: [] }]
+  history: [{ date: '', remark: '', image: [] }]
 };
 
 const reducer = handleActions(
@@ -203,6 +238,17 @@ const reducer = handleActions(
       if (!recipe.hasOwnProperty('steps')) {
         recipe.steps = [];
       }
+
+      let history = recipe.history;
+
+      // create empty history when no history exist
+      // create new history when history exist
+      if (!recipe.hasOwnProperty('history')) {
+        history = [{ date: '', remark: '', image: [] }];
+      } else {
+        history.push({ date: '', remark: '', image: [] });
+      }
+
       return {
         ...state,
         fetching: false,
@@ -211,7 +257,8 @@ const reducer = handleActions(
         ingredients: recipe.ingredients,
         name: recipe.name,
         recipeId: recipeId,
-        steps: recipe.steps
+        steps: recipe.steps,
+        history: history
       };
     },
     RECIPE_FETCH_REJECT: (state, action) => ({
@@ -281,16 +328,18 @@ const reducer = handleActions(
     IMGUPLOADER_ADD: (state, action) => {
       switch (action.payload) {
         case 'History':
-          let history = [...state.history];
-          let image = history[history.length - 1].image;
+          const history = [...state.history];
+          const latestHistory = history[history.length - 1];
+          let image = latestHistory.image;
           let newNo;
+
           if (image.length === 0) {
             newNo = 1;
           } else {
             newNo = parseInt(image[image.length - 1].no + 1, 10);
           }
           image.push({ url: '', no: newNo });
-          history.image = image;
+          latestHistory.image = image;
           return { ...state, history: history };
         default:
           return state;
@@ -300,7 +349,8 @@ const reducer = handleActions(
     IMG_UPLOAD_FULFILL: (state, action) => {
       const { type, no, url } = action.payload;
       const history = [...state.history];
-      let image = history[history.length - 1].image;
+      const latestHistory = history[history.length - 1];
+      let image = latestHistory.image;
 
       if (type === 'History') {
         if (no) {
@@ -318,18 +368,32 @@ const reducer = handleActions(
     [combineActions(imgUploadReject, imgUploadCancel)](state, action) {
       return { ...state, uploading: false };
     },
-    HISTORY_ADD: (state, action) => {
+    HISTORY_REMARK_CHANGE: (state, action) => {
       const history = [...state.history];
-
-      // only initial data exist, don't create new history
-      if (history.length === 1 && history[0].date !== '') {
-        return state;
-      }
-
-      // create new history
-      history.push({ date: '', remark: '', image: [] });
+      const lastHistory = history[history.length - 1];
+      lastHistory.remark = action.payload;
       return { ...state, history: history };
-    }
+    },
+    HISTORY_DATE_CHANGE: (state, action) => {
+      const history = [...state.history];
+      const lastHistory = history[history.length - 1];
+      lastHistory.date = action.payload;
+      return { ...state, history: history };
+    },
+    HISTORY_UPDATE_PENDING: (state, action) => ({
+      ...state,
+      updating: true
+    }),
+    HISTORY_UPDATE_FULFILL: (state, action) => ({
+      ...state,
+      updating: false,
+      updated: true
+    }),
+    HISTORY_UPDATE_REJECT: (state, action) => ({
+      ...state,
+      error: action.payload,
+      fetching: false
+    })
   },
   defaultState
 );
