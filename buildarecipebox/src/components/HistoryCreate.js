@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, { Component } from 'react';
 import ImageUploader from './ImageUploader';
 import { TextArea } from './utility';
@@ -15,7 +16,8 @@ import {
 const HistoryCreate = connect(store => {
   return {
     name: store.recipe.name,
-    history: store.recipe.history,
+    histories: store.recipe.histories,
+    historyId: store.recipe.historyId,
     recipeId: store.recipe.recipeId,
     fetching: store.recipe.fetching,
     fetched: store.recipe.fetched,
@@ -25,15 +27,6 @@ const HistoryCreate = connect(store => {
   };
 })(
   class HistoryCreate extends Component {
-    // constructor(props) {
-    //   super(props);
-    //   this.onAddImageUploader = this.handleAddImageUploader.bind(this);
-    //   this.onImageUpload = this.handleImageUpload.bind(this);
-    //   this.onDateChange = this.handleDateChange.bind(this);
-    //   this.onRemarkChange = this.handleRemarkChange.bind(this);
-    //   this.onHistoryUpdate = this.handleHistoryUpdate.bind(this);
-    // }
-
     componentDidMount = () => {
       const recipeId = this.props.match.params.id;
       this.props.dispatch(recipeFetch(recipeId));
@@ -41,33 +34,37 @@ const HistoryCreate = connect(store => {
 
     handleDateChange = e => {
       const value = e.target.value;
-      this.props.dispatch(historyDateChange(value));
+      const historyId = this.props.historyId;
+      this.props.dispatch(historyDateChange(value, historyId));
     };
 
     handleRemarkChange = e => {
       const value = e.target.value;
-      this.props.dispatch(historyRemarkChange(value));
+      const historyId = this.props.historyId;
+      this.props.dispatch(historyRemarkChange(value, historyId));
     };
 
     handleHistoryUpdate = () => {
-      const { recipeId } = this.props;
-      const history = this.props.history;
-      this.props.dispatch(historyUpdate(recipeId, history));
+      const { recipeId, histories } = this.props;
+      this.props.dispatch(historyUpdate(recipeId, histories));
     };
 
-    handleAddImageUploader = () => {
-      this.props.dispatch(imgUploaderAdd('History'));
+    handleImageUploaderAdd = () => {
+      const { historyId } = this.props;
+      this.props.dispatch(imgUploaderAdd('History', historyId));
     };
 
     handleImageUpload = (e, no) => {
       console.log('onImageUpload');
-      this.props.dispatch(imgUpload(e, 'History', no));
+      const { historyId } = this.props;
+      this.props.dispatch(imgUpload(e, 'History', no, historyId));
     };
 
     render() {
       const {
         name,
-        history,
+        histories,
+        historyId,
         fetching,
         updating,
         updated,
@@ -100,14 +97,17 @@ const HistoryCreate = connect(store => {
         styleBtnUpdateText = 'btn-primary';
       }
 
-      const latestHistory = history[history.length - 1];
-      const { date, remark, image } = latestHistory;
+      const index = _.findIndex(histories, ['id', historyId]);
+      const history = histories[index];
+      const date = _.get(history, 'date', '');
+      const remark = _.get(history, 'remark', '');
+      const images = _.get(history, 'images', []);
 
       const imageUploaders = [];
 
-      image &&
-        image.length > 0 &&
-        image.forEach(image => {
+      images &&
+        images.length > 0 &&
+        images.forEach(image => {
           const no = image.no;
           const url = image.url;
           imageUploaders.push(
@@ -177,7 +177,7 @@ const HistoryCreate = connect(store => {
             <div className="col-sm-4 mr-auto">
               <button
                 className="btn bnt-block"
-                onClick={this.handleAddImageUploader}>
+                onClick={this.handleImageUploaderAdd}>
                 Add Image
               </button>
             </div>

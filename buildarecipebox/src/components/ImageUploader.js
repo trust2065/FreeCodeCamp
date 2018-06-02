@@ -27,7 +27,8 @@ class ImageUploader extends Component {
             onChange={onImageUpload}
           />
         </form>
-        <img src={url} alt="" />
+        {!url ||
+          (url !== '' && <img className="img-fluid" src={url} alt="img" />)}
       </div>
     );
   }

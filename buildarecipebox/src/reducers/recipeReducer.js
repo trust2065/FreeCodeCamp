@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import {
   createAction,
   createActions,
@@ -8,23 +9,31 @@ import database from '../components/Firebase';
 import RecipeDao from '../components/RecipeDao';
 import axios from 'axios';
 
-export const imgUploaderAdd = createAction('IMGUPLOADER_ADD');
+export const imgUploaderAdd = createAction(
+  'IMGUPLOADER_ADD',
+  (type, historyId) => ({ type, historyId })
+);
 
 const {
-  imgUploadPending,
   imgUploadFulfill,
+  imgUploadPending,
   imgUploadReject,
   imgUploadCancel
 } = createActions(
   {
-    IMG_UPLOAD_FULFILL: (url, type, no) => ({ url, type, no })
+    IMG_UPLOAD_FULFILL: (url, type, no, historyId) => ({
+      url,
+      type,
+      no,
+      historyId
+    })
   },
   'IMG_UPLOAD_PENDING',
   'IMG_UPLOAD_REJECT',
   'IMG_UPLOAD_CANCEL'
 );
 
-export function imgUpload(e, type = 'recipe', no = 0) {
+export function imgUpload(e, type = 'recipe', no = 0, historyId) {
   return dispatch => {
     dispatch(imgUploadPending());
     const files = e.target.files;
@@ -48,7 +57,7 @@ export function imgUpload(e, type = 'recipe', no = 0) {
         })
         .then(response => {
           const imgURL = response.data.data.link;
-          dispatch(imgUploadFulfill(imgURL, type, no));
+          dispatch(imgUploadFulfill(imgURL, type, no, historyId));
         })
         .catch(error => {
           dispatch(imgUploadReject());
@@ -168,9 +177,11 @@ export const {
   historyDateChange,
   historyRemarkChange
 } = createActions(
-  'HISTORY_ADD',
-  'HISTORY_REMARK_CHANGE',
-  'HISTORY_DATE_CHANGE'
+  {
+    HISTORY_DATE_CHANGE: (value, historyId) => ({ value, historyId }),
+    HISTORY_REMARK_CHANGE: (value, historyId) => ({ value, historyId })
+  },
+  'HISTORY_ADD'
 );
 
 const {
@@ -183,13 +194,13 @@ const {
   'HISTORY_UPDATE_REJECT'
 );
 
-export function historyUpdate(recipeId, history) {
+export function historyUpdate(recipeId, histories) {
   return dispatch => {
     dispatch(historyUpdatePending());
     database
       .ref('recipe/' + recipeId)
       .update({
-        history: history
+        histories: histories
       })
       .then(() => {
         dispatch(historyUpdateFulfill());
@@ -211,7 +222,9 @@ const defaultState = {
   updated: false,
   uploading: false,
   imgURL: '',
-  history: [{ date: '', remark: '', image: [] }]
+  // history: [{ date: '', remark: '', images: [] }]
+  histories: [],
+  historyId: 0
 };
 
 const reducer = handleActions(
@@ -239,14 +252,24 @@ const reducer = handleActions(
         recipe.steps = [];
       }
 
-      let history = recipe.history;
+      let histories = recipe.histories;
+      let lastId = 0;
+
+      histories &&
+        histories.forEach(history => {
+          if (parseInt(history.id, 10) > lastId) {
+            lastId = history.id;
+          }
+        });
+
+      const id = lastId + 1;
 
       // create empty history when no history exist
       // create new history when history exist
-      if (!recipe.hasOwnProperty('history')) {
-        history = [{ date: '', remark: '', image: [] }];
+      if (!recipe.hasOwnProperty('histories')) {
+        histories = [{ id: id, images: [] }];
       } else {
-        history.push({ date: '', remark: '', image: [] });
+        histories.push({ id: id, images: [] });
       }
 
       return {
@@ -258,7 +281,8 @@ const reducer = handleActions(
         name: recipe.name,
         recipeId: recipeId,
         steps: recipe.steps,
-        history: history
+        histories: histories,
+        historyId: id
       };
     },
     RECIPE_FETCH_REJECT: (state, action) => ({
@@ -326,21 +350,24 @@ const reducer = handleActions(
       return { ...state, ingredients: ingredients };
     },
     IMGUPLOADER_ADD: (state, action) => {
-      switch (action.payload) {
+      const { type } = action.payload;
+      switch (type) {
         case 'History':
-          const history = [...state.history];
-          const latestHistory = history[history.length - 1];
-          let image = latestHistory.image;
+          const { historyId } = action.payload;
+          const histories = [...state.histories];
+          const index = _.findIndex(histories, ['id', historyId]);
+          const history = histories[index];
+          let images = history.images;
           let newNo;
 
-          if (image.length === 0) {
+          if (images.length === 0) {
             newNo = 1;
           } else {
-            newNo = parseInt(image[image.length - 1].no + 1, 10);
+            newNo = parseInt(images[images.length - 1].no + 1, 10);
           }
-          image.push({ url: '', no: newNo });
-          latestHistory.image = image;
-          return { ...state, history: history };
+          images.push({ url: '', no: newNo });
+          history.images = images;
+          return { ...state, histories: histories };
         default:
           return state;
       }
@@ -351,12 +378,15 @@ const reducer = handleActions(
 
       if (type === 'History') {
         if (no) {
-          const history = [...state.history];
-          const latestHistory = history[history.length - 1];
-          let image = latestHistory.image;
+          const { historyId } = action.payload;
+          const histories = [...state.histories];
+          const index = _.findIndex(histories, ['id', historyId]);
+          const history = histories[index];
 
-          image[no - 1].url = url;
-          latestHistory.image = image;
+          let images = history.images;
+
+          images[no - 1].url = url;
+          history.images = images;
 
           return {
             ...state,
@@ -375,16 +405,23 @@ const reducer = handleActions(
       return { ...state, uploading: false };
     },
     HISTORY_REMARK_CHANGE: (state, action) => {
-      const history = [...state.history];
-      const lastHistory = history[history.length - 1];
-      lastHistory.remark = action.payload;
-      return { ...state, history: history };
+      const { value, historyId } = action.payload;
+      const histories = [...state.histories];
+      const index = _.findIndex(histories, ['id', historyId]);
+      const history = histories[index];
+
+      history.remark = value;
+      return { ...state, histories: histories };
     },
     HISTORY_DATE_CHANGE: (state, action) => {
-      const history = [...state.history];
-      const lastHistory = history[history.length - 1];
-      lastHistory.date = action.payload;
-      return { ...state, history: history };
+      const { value, historyId } = action.payload;
+      const histories = [...state.histories];
+      const index = _.findIndex(histories, ['id', historyId]);
+      const history = histories[index];
+
+      history.date = value;
+
+      return { ...state, histories: histories };
     },
     HISTORY_UPDATE_PENDING: (state, action) => ({
       ...state,
