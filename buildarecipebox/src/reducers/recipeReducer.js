@@ -163,6 +163,8 @@ export function recipeUpdate(recipeId, name, ingredients, steps, imgURL = '') {
 
 export const reset = createAction('RESET');
 
+export const historyAdd = createAction('HISTORY_ADD');
+
 const defaultState = {
   recipeId: 0,
   name: '',
@@ -174,7 +176,7 @@ const defaultState = {
   updated: false,
   uploading: false,
   imgURL: '',
-  imgURLHistory: []
+  history: [{ date: 'd', remark: '', image: [] }]
 };
 
 const reducer = handleActions(
@@ -279,18 +281,17 @@ const reducer = handleActions(
     IMGUPLOADER_ADD: (state, action) => {
       switch (action.payload) {
         case 'History':
-          let imgURLHistory = [...state.imgURLHistory];
+          let history = [...state.history];
+          let image = history[history.length - 1].image;
           let newNo;
-          if (imgURLHistory.length === 0) {
+          if (image.length === 0) {
             newNo = 1;
           } else {
-            newNo = parseInt(
-              imgURLHistory[imgURLHistory.length - 1].no + 1,
-              10
-            );
+            newNo = parseInt(image[image.length - 1].no + 1, 10);
           }
-          imgURLHistory.push({ url: '', no: newNo });
-          return { ...state, imgURLHistory: imgURLHistory };
+          image.push({ url: '', no: newNo });
+          history.image = image;
+          return { ...state, history: history };
         default:
           return state;
       }
@@ -298,22 +299,36 @@ const reducer = handleActions(
     IMG_UPLOAD_PENDING: (state, action) => ({ ...state, uploading: true }),
     IMG_UPLOAD_FULFILL: (state, action) => {
       const { type, no, url } = action.payload;
-      let imgURLHistory = [...state.imgURLHistory];
+      const history = [...state.history];
+      let image = history[history.length - 1].image;
 
       if (type === 'History') {
         if (no) {
-          imgURLHistory[no - 1].url = url;
+          image[no - 1].url = url;
+          history.image = image;
         }
       }
       return {
         ...state,
         uploading: false,
         imgURL: url,
-        imgURLHistory: imgURLHistory
+        history: history
       };
     },
     [combineActions(imgUploadReject, imgUploadCancel)](state, action) {
       return { ...state, uploading: false };
+    },
+    HISTORY_ADD: (state, action) => {
+      const history = [...state.history];
+
+      // only initial data exist, don't create new history
+      if (history.length === 1 && history[0].date !== '') {
+        return state;
+      }
+
+      // create new history
+      history.push({ date: '', remark: '', image: [] });
+      return { ...state, history: history };
     }
   },
   defaultState

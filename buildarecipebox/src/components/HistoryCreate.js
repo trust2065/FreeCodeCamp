@@ -2,10 +2,15 @@ import React, { Component } from 'react';
 import ImageUploader from './ImageUploader';
 import { TextArea } from './utility';
 import { connect } from 'react-redux';
-import { imgUploaderAdd, imgUpload } from '../reducers/recipeReducer';
+import {
+  historyAdd,
+  imgUploaderAdd,
+  imgUpload
+} from '../reducers/recipeReducer';
 
 const HistoryCreate = connect(store => {
   return {
+    history: store.recipe.history,
     recipeId: store.recipe.recipeId,
     imgURLHistory: store.recipe.imgURLHistory
   };
@@ -16,9 +21,14 @@ const HistoryCreate = connect(store => {
       this.onAddImageUploader = this.onAddImageUploader.bind(this);
       this.onImageUpload = this.onImageUpload.bind(this);
     }
-    onNameChange() {}
+
+    componentDidMount() {
+      this.props.dispatch(historyAdd());
+    }
     onDateChange() {}
+
     onRemarkChange(e) {}
+
     onUpdateRecipeHistory() {}
 
     onAddImageUploader() {
@@ -31,38 +41,27 @@ const HistoryCreate = connect(store => {
     }
 
     render() {
-      const { imgURLHistory } = this.props;
-      const { name, date, remark } = {
-        name: '',
-        date: '',
-        remark: ''
-      };
+      const latestHistory = this.props.history[this.props.history.length - 1];
+      const { name, date, remark, image } = latestHistory;
 
-      // const imgURLHistory = [
-      //   { no: 1, url: '' },
-      //   { no: 2, url: '' },
-      //   { no: 3, url: '' },
-      //   { no: 4, url: '' }
-      // ];
       const imageUploaders = [];
 
-      imgURLHistory &&
-        imgURLHistory.forEach(image => {
-          const no = image.no;
-          const url = image.url;
-          imageUploaders.push(
-            <div
-              key={`imageUploader_${no}`}
-              className="col-sm-4"
-              style={{ minHeight: '15vw' }}>
-              <ImageUploader
-                no={no}
-                url={url}
-                onImageUpload={e => this.onImageUpload(e, no)}
-              />
-            </div>
-          );
-        });
+      image.forEach(image => {
+        const no = image.no;
+        const url = image.url;
+        imageUploaders.push(
+          <div
+            key={`imageUploader_${no}`}
+            className="col-sm-4"
+            style={{ minHeight: '15vw' }}>
+            <ImageUploader
+              no={no}
+              url={url}
+              onImageUpload={e => this.onImageUpload(e, no)}
+            />
+          </div>
+        );
+      });
 
       return (
         <div className="container">
@@ -80,9 +79,9 @@ const HistoryCreate = connect(store => {
               <div>
                 <label htmlFor="name">Name</label>
                 <input
+                  disabled
                   type="text"
                   value={name}
-                  onChange={this.onNameChange}
                   className="form-control"
                 />
               </div>
