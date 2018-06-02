@@ -4,6 +4,7 @@ import { TextArea } from './utility';
 import { connect } from 'react-redux';
 import {
   recipeFetch,
+  reset,
   historyUpdate,
   historyDateChange,
   historyRemarkChange,
@@ -15,7 +16,12 @@ const HistoryCreate = connect(store => {
   return {
     name: store.recipe.name,
     history: store.recipe.history,
-    recipeId: store.recipe.recipeId
+    recipeId: store.recipe.recipeId,
+    fetching: store.recipe.fetching,
+    fetched: store.recipe.fetched,
+    updating: store.recipe.updating,
+    updated: store.recipe.updated,
+    uploading: store.recipe.uploading
   };
 })(
   class HistoryCreate extends Component {
@@ -59,7 +65,40 @@ const HistoryCreate = connect(store => {
     }
 
     render() {
-      const { name, history } = this.props;
+      const {
+        name,
+        history,
+        fetching,
+        updating,
+        updated,
+        uploading
+      } = this.props;
+
+      let styleBtnUpdateText;
+      let toggleDisable = false;
+      let btnUpdateText;
+
+      if (fetching || updating || uploading) {
+        if (fetching) {
+          btnUpdateText = 'fetching';
+        } else if (updating) {
+          btnUpdateText = 'updating';
+        } else if (uploading) {
+          btnUpdateText = 'image uploading';
+        }
+        toggleDisable = true;
+        styleBtnUpdateText = 'btn-warning disable';
+      } else if (updated) {
+        btnUpdateText = 'update complete';
+        toggleDisable = true;
+        styleBtnUpdateText = 'btn-success disable';
+        setTimeout(() => {
+          this.props.dispatch(reset());
+        }, 2000);
+      } else {
+        btnUpdateText = 'update';
+        styleBtnUpdateText = 'btn-primary';
+      }
 
       const latestHistory = history[history.length - 1];
       const { date, remark, image } = latestHistory;
@@ -79,6 +118,8 @@ const HistoryCreate = connect(store => {
               <ImageUploader
                 no={no}
                 url={url}
+                disabled={toggleDisable}
+                uploading={uploading}
                 onImageUpload={e => this.onImageUpload(e, no)}
               />
             </div>
@@ -89,8 +130,11 @@ const HistoryCreate = connect(store => {
         <div className="container">
           <div className="row">
             <div className="col-sm-4 ml-auto">
-              <button className="btn btn-block" onClick={this.onHistoryUpdate}>
-                Update
+              <button
+                disabled={toggleDisable}
+                className={`btn btn-block ${styleBtnUpdateText}`}
+                onClick={this.onHistoryUpdate}>
+                {btnUpdateText}
               </button>
             </div>
           </div>
