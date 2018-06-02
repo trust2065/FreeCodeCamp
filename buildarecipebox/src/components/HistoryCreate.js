@@ -23,9 +23,9 @@ const HistoryCreate = connect(store => {
     }
 
     componentDidMount() {
-      this.props.dispatch(historyAdd());
+      const recipeId = this.props.match.params.id;
+      this.props.dispatch(recipeFetch(recipeId));
     }
-    onDateChange() {}
 
     onRemarkChange(e) {}
 
