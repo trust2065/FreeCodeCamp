@@ -8,19 +8,23 @@ import database from '../components/Firebase';
 import RecipeDao from '../components/RecipeDao';
 import axios from 'axios';
 
+export const imgUploaderAdd = createAction('IMGUPLOADER_ADD');
+
 const {
   imgUploadPending,
   imgUploadFulfill,
   imgUploadReject,
   imgUploadCancel
 } = createActions(
+  {
+    IMG_UPLOAD_FULFILL: (url, type, no) => ({ url, type, no })
+  },
   'IMG_UPLOAD_PENDING',
-  'IMG_UPLOAD_FULFILL',
   'IMG_UPLOAD_REJECT',
   'IMG_UPLOAD_CANCEL'
 );
 
-export function imgUpload(e) {
+export function imgUpload(e, type = 'recipe', no = 0) {
   return dispatch => {
     dispatch(imgUploadPending());
     const files = e.target.files;
@@ -44,7 +48,7 @@ export function imgUpload(e) {
         })
         .then(response => {
           const imgURL = response.data.data.link;
-          dispatch(imgUploadFulfill(imgURL));
+          dispatch(imgUploadFulfill(imgURL, type, no));
         })
         .catch(error => {
           dispatch(imgUploadReject());
@@ -169,7 +173,8 @@ const defaultState = {
   updating: false,
   updated: false,
   uploading: false,
-  imgURL: ''
+  imgURL: '',
+  imgURLHistory: []
 };
 
 const reducer = handleActions(
@@ -271,12 +276,42 @@ const reducer = handleActions(
       ingredients.splice(targetIndex, 1);
       return { ...state, ingredients: ingredients };
     },
+    IMGUPLOADER_ADD: (state, action) => {
+      switch (action.payload) {
+        case 'History':
+          let imgURLHistory = [...state.imgURLHistory];
+          let newNo;
+          if (imgURLHistory.length === 0) {
+            newNo = 1;
+          } else {
+            newNo = parseInt(
+              imgURLHistory[imgURLHistory.length - 1].no + 1,
+              10
+            );
+          }
+          imgURLHistory.push({ url: '', no: newNo });
+          return { ...state, imgURLHistory: imgURLHistory };
+        default:
+          return state;
+      }
+    },
     IMG_UPLOAD_PENDING: (state, action) => ({ ...state, uploading: true }),
-    IMG_UPLOAD_FULFILL: (state, action) => ({
-      ...state,
-      uploading: false,
-      imgURL: action.payload
-    }),
+    IMG_UPLOAD_FULFILL: (state, action) => {
+      const { type, no, url } = action.payload;
+      let imgURLHistory = [...state.imgURLHistory];
+
+      if (type === 'History') {
+        if (no) {
+          imgURLHistory[no - 1].url = url;
+        }
+      }
+      return {
+        ...state,
+        uploading: false,
+        imgURL: url,
+        imgURLHistory: imgURLHistory
+      };
+    },
     [combineActions(imgUploadReject, imgUploadCancel)](state, action) {
       return { ...state, uploading: false };
     }
