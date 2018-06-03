@@ -244,26 +244,6 @@ const reducer = handleActions(
       const recipe = action.payload.recipe;
       const recipeId = action.payload.recipeId;
 
-      let histories = recipe.histories;
-      let lastId = 0;
-
-      histories &&
-        histories.forEach(history => {
-          if (parseInt(history.id, 10) > lastId) {
-            lastId = history.id;
-          }
-        });
-
-      const id = lastId + 1;
-
-      // create empty history when no history exist
-      // create new history when history exist
-      if (!recipe.hasOwnProperty('histories')) {
-        histories = [{ id: id, images: [] }];
-      } else {
-        histories.push({ id: id, images: [] });
-      }
-
       return {
         ...state,
         fetching: false,
@@ -273,8 +253,7 @@ const reducer = handleActions(
         name: recipe.name,
         recipeId: recipeId,
         steps: recipe.steps,
-        histories: histories,
-        historyId: id
+        histories: recipe.histories
       };
     },
     RECIPE_FETCH_REJECT: (state, action) => ({
@@ -395,6 +374,28 @@ const reducer = handleActions(
     },
     [combineActions(imgUploadReject, imgUploadCancel)](state, action) {
       return { ...state, uploading: false };
+    },
+    HISTORY_ADD: (state, action) => {
+      let histories;
+      let newHistoryId;
+
+      if (!state.histories) {
+        newHistoryId = 1;
+        histories = [{ id: newHistoryId, images: [] }];
+      } else {
+        histories = [...state.histories];
+        let lastId = 0;
+
+        histories.forEach(history => {
+          if (parseInt(history.id, 10) > lastId) {
+            lastId = history.id;
+          }
+        });
+        newHistoryId = lastId + 1;
+
+        histories.push({ id: newHistoryId, images: [] });
+      }
+      return { ...state, historyId: newHistoryId, histories: histories };
     },
     HISTORY_REMARK_CHANGE: (state, action) => {
       const { value, historyId } = action.payload;

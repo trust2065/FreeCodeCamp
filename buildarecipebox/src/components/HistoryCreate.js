@@ -7,6 +7,7 @@ import {
   recipeFetch,
   reset,
   historyUpdate,
+  historyAdd,
   historyDateChange,
   historyRemarkChange,
   imgUploaderAdd,
@@ -29,7 +30,10 @@ const HistoryCreate = connect(store => {
   class HistoryCreate extends Component {
     componentDidMount = () => {
       const recipeId = this.props.match.params.id;
-      this.props.dispatch(recipeFetch(recipeId));
+      this.props.dispatch(recipeFetch(recipeId)).then(() => {
+        console.log('recipeFetch complete');
+        this.props.dispatch(historyAdd());
+      });
     };
 
     handleDateChange = e => {
@@ -100,7 +104,7 @@ const HistoryCreate = connect(store => {
       let history;
       const index =
         historyId !== 0 && _.findIndex(histories, ['id', historyId]);
-      if (index !== -1) {
+      if (index !== false && index !== -1) {
         history = histories[index];
       }
 
