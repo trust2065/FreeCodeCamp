@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { connect } from 'react-redux';
 import React, { Component } from 'react';
@@ -86,8 +87,6 @@ const Recipe = connect(store => {
       // console.log('render Recipe');
       // console.log(this.props);
       const {
-        ingredients,
-        steps,
         name,
         fetching,
         updating,
@@ -96,6 +95,9 @@ const Recipe = connect(store => {
         recipeId,
         imgURL
       } = this.props;
+
+      const ingredients = _.get(this.props, 'ingredients', []);
+      const steps = _.get(this.props, 'steps', []);
 
       let ingredientsRow = [];
       let stepsRow = [];

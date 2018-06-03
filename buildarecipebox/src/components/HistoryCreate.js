@@ -97,8 +97,13 @@ const HistoryCreate = connect(store => {
         styleBtnUpdateText = 'btn-primary';
       }
 
-      const index = _.findIndex(histories, ['id', historyId]);
-      const history = histories[index];
+      let history;
+      const index =
+        historyId !== 0 && _.findIndex(histories, ['id', historyId]);
+      if (index !== -1) {
+        history = histories[index];
+      }
+
       const date = _.get(history, 'date', '');
       const remark = _.get(history, 'remark', '');
       const images = _.get(history, 'images', []);

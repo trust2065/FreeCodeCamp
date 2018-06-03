@@ -108,6 +108,7 @@ export function recipeFetch(recipeId) {
   return dispatch => {
     dispatch(recipeFetchPending());
     const recipeRef = database.ref(`recipe/${recipeId}`);
+
     recipeRef.on(
       'value',
       function(snapshot) {
@@ -222,7 +223,6 @@ const defaultState = {
   updated: false,
   uploading: false,
   imgURL: '',
-  // history: [{ date: '', remark: '', images: [] }]
   histories: [],
   historyId: 0
 };
@@ -244,13 +244,6 @@ const reducer = handleActions(
     RECIPE_FETCH_FULFILL: (state, action) => {
       const recipe = action.payload.recipe;
       const recipeId = action.payload.recipeId;
-
-      if (!recipe.hasOwnProperty('ingredients')) {
-        recipe.ingredients = [];
-      }
-      if (!recipe.hasOwnProperty('steps')) {
-        recipe.steps = [];
-      }
 
       let histories = recipe.histories;
       let lastId = 0;
@@ -407,19 +400,34 @@ const reducer = handleActions(
     HISTORY_REMARK_CHANGE: (state, action) => {
       const { value, historyId } = action.payload;
       const histories = [...state.histories];
-      const index = _.findIndex(histories, ['id', historyId]);
-      const history = histories[index];
 
-      history.remark = value;
+      let history;
+      const index =
+        historyId !== 0 && _.findIndex(histories, ['id', historyId]);
+      if (index !== -1) {
+        history = histories[index];
+      }
+
+      if (history) {
+        history.remark = value;
+      }
+
       return { ...state, histories: histories };
     },
     HISTORY_DATE_CHANGE: (state, action) => {
       const { value, historyId } = action.payload;
       const histories = [...state.histories];
-      const index = _.findIndex(histories, ['id', historyId]);
-      const history = histories[index];
 
-      history.date = value;
+      let history;
+      const index =
+        historyId !== 0 && _.findIndex(histories, ['id', historyId]);
+      if (index !== -1) {
+        history = histories[index];
+      }
+
+      if (history) {
+        history.date = value;
+      }
 
       return { ...state, histories: histories };
     },
