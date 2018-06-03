@@ -102,10 +102,12 @@ const HistoryCreate = connect(store => {
       }
 
       let history;
-      const index =
-        historyId !== 0 && _.findIndex(histories, ['id', historyId]);
-      if (index !== false && index !== -1) {
-        history = histories[index];
+      let index;
+      if (historyId !== 0) {
+        index = _.findIndex(histories, ['id', historyId]);
+        if (index !== -1) {
+          history = histories[index];
+        }
       }
 
       const date = _.get(history, 'date', '');
