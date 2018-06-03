@@ -5,7 +5,7 @@ import './css/Recipe.css';
 import Recipe from './components/Recipe';
 import Header from './components/Header';
 import Home from './components/Home';
-import HistoryDetail from './components/HistoryDetail';
+import History from './components/History';
 import HistoryCreate from './components/HistoryCreate';
 import registerServiceWorker from './registerServiceWorker';
 import {
@@ -36,7 +36,7 @@ ReactDOM.render(
           <Route
             exact
             path="/recipe/:id/history/:historyId"
-            component={HistoryDetail}
+            component={History}
           />
           <Route>
             <Redirect to="/" />
