@@ -109,8 +109,7 @@ export function recipeFetch(recipeId) {
     dispatch(recipeFetchPending());
     const recipeRef = database.ref(`recipe/${recipeId}`);
 
-    recipeRef.on(
-      'value',
+    return recipeRef.once('value').then(
       function(snapshot) {
         let recipe = snapshot.val();
         // console.log('recipe');
