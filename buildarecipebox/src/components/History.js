@@ -21,14 +21,11 @@ const History = connect(store => ({
     render() {
       const { histories } = this.props;
 
-      const imageBoxs = [];
+      const historyBoxs = [];
 
       histories.forEach((history, i) => {
-        imageBoxs.push(
-          <div
-            key={`historyImage_${i}`}
-            className="col-sm-4"
-            style={{ minHeight: '15vw' }}>
+        historyBoxs.push(
+          <div key={`historyImage_${i}`} className="col-sm-4">
             <HistoryBox
               images={history.images}
               remark={history.remark}
@@ -37,6 +34,9 @@ const History = connect(store => ({
             />
           </div>
         );
+        if (i !== 0 && i % 3 === 0) {
+          historyBoxs.push(<div className="clearfix" />);
+        }
       });
 
       return (
@@ -56,7 +56,7 @@ const History = connect(store => ({
               <button className="btn btn-block mt-5">Add History</button>
             </div>
           </div>
-          <div className="row mt-5">{imageBoxs}</div>
+          <div className="row mt-5">{historyBoxs}</div>
         </div>
       );
     }
