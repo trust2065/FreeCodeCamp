@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import React, { Component } from 'react';
 import HistoryBox from './utility/HistoryBox';
 import { recipeFetch } from '../reducers/recipeReducer';
@@ -17,8 +16,6 @@ const History = connect(store => ({
     }
     componentDidMount = () => {
       const recipeId = this.props.match.params.id;
-      const historyId = parseInt(this.props.match.params.historyId, 10);
-
       this.props.dispatch(recipeFetch(recipeId));
     };
     render() {
@@ -27,19 +24,13 @@ const History = connect(store => ({
       const imageBoxs = [];
 
       histories.forEach((history, i) => {
-        let presentUrl = 'https://i.imgur.com/ZyWrMfd.png';
-        if (history.images && history.images.length > 0) {
-          if (history.images[0].url !== '') {
-            presentUrl = history.images[0].url;
-          }
-        }
         imageBoxs.push(
           <div
             key={`historyImage_${i}`}
             className="col-sm-4"
             style={{ minHeight: '15vw' }}>
             <HistoryBox
-              url={presentUrl}
+              images={history.images}
               remark={history.remark}
               date={history.date}
               showRemark={true}
