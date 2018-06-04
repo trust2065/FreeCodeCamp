@@ -84,7 +84,7 @@ export default class ImageBox extends Component {
           </button>
         </div>
         <div className="row mt-2">
-          <div>
+          <div style={{ height: '25vw' }}>
             <img className="img-fluid" src={url} alt="record" />
           </div>
         </div>
