@@ -84,7 +84,9 @@ export default class ImageBox extends Component {
           </button>
         </div>
         <div className="row mt-2">
-          <img className="img-fluid" src={url} alt="record" />
+          <div>
+            <img className="img-fluid" src={url} alt="record" />
+          </div>
         </div>
         {this.props.children}
       </div>
