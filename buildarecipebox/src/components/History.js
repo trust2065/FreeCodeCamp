@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, { Component } from 'react';
 import HistoryBox from './utility/HistoryBox';
 import { recipeFetch } from '../reducers/recipeReducer';
@@ -11,15 +12,21 @@ const History = connect(store => ({
       super(props);
       this.state = {
         history: { date: '', remark: '', images: [] },
-        historyId: 0
+        historyId: 0,
+        showRemark: true
       };
     }
     componentDidMount = () => {
       const recipeId = this.props.match.params.id;
       this.props.dispatch(recipeFetch(recipeId));
     };
+    onShowRemarkChange = e => {
+      const showRemark = e.target.checked;
+      this.setState({ ...this.state, showRemark: showRemark });
+    };
     render() {
       const { histories } = this.props;
+      const showRemark = _.get(this.state, 'showRemark', true);
 
       const historyBoxs = [];
 
@@ -30,7 +37,7 @@ const History = connect(store => ({
               images={history.images}
               remark={history.remark}
               date={history.date}
-              showRemark={true}
+              showRemark={showRemark}
             />
           </div>
         );
@@ -48,6 +55,8 @@ const History = connect(store => ({
                   type="checkbox"
                   className="form-check-input"
                   id="showRemark"
+                  onChange={this.onShowRemarkChange}
+                  checked={showRemark}
                 />
                 <label className="form-check-label" htmlFor="showRemark">
                   Show remark
