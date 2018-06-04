@@ -33,11 +33,7 @@ ReactDOM.render(
             path="/recipe/:id/history/create"
             component={HistoryCreate}
           />
-          <Route
-            exact
-            path="/recipe/:id/history/:historyId"
-            component={History}
-          />
+          <Route exact path="/recipe/:id/history" component={History} />
           <Route>
             <Redirect to="/" />
           </Route>

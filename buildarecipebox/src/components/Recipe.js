@@ -209,9 +209,16 @@ const Recipe = connect(store => {
               </div>
             </div>
             <div className="col-sm">
-              <Link to={`/recipe/${recipeId}/history/create`}>
-                <button className="btn btn-block mb-4">Add History</button>
-              </Link>
+              {recipeId && (
+                <div>
+                  <Link to={`/recipe/${recipeId}/history`}>
+                    <button className="btn btn-block mb-4">View History</button>
+                  </Link>
+                  <Link to={`/recipe/${recipeId}/history/create`}>
+                    <button className="btn btn-block mb-4">Add History</button>
+                  </Link>
+                </div>
+              )}
               <form id="imgur">
                 {uploading ? (
                   <label>Uploading</label>
