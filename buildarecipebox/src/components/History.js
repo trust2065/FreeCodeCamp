@@ -47,9 +47,6 @@ const History = connect(store => ({
               />
             </div>
           );
-          if (i !== 0 && i % 3 === 0) {
-            historyBoxs.push(<div className="clearfix" />);
-          }
         });
 
       return (
