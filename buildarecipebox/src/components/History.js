@@ -38,6 +38,8 @@ const History = connect(store => ({
           historyBoxs.push(
             <div key={`historyImage_${i}`} className="col-sm-4">
               <HistoryBox
+                recipeId={recipeId}
+                historyId={history.id}
                 images={history.images}
                 remark={history.remark}
                 date={history.date}

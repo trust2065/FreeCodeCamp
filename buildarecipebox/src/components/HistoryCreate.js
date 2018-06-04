@@ -10,6 +10,7 @@ import {
   historyAdd,
   historyDateChange,
   historyRemarkChange,
+  historyIdSet,
   imgUploaderAdd,
   imgUpload
 } from '../reducers/recipeReducer';
@@ -30,9 +31,15 @@ const HistoryCreate = connect(store => {
   class HistoryCreate extends Component {
     componentDidMount = () => {
       const recipeId = this.props.match.params.id;
+      const historyId = this.props.match.params.historyId;
+
       this.props.dispatch(recipeFetch(recipeId)).then(() => {
         console.log('recipeFetch complete');
-        this.props.dispatch(historyAdd());
+        if (historyId === 'create') {
+          this.props.dispatch(historyAdd());
+        } else {
+          this.props.dispatch(historyIdSet(historyId));
+        }
       });
     };
 

@@ -172,16 +172,20 @@ export function recipeUpdate(recipeId, name, ingredients, steps, imgURL = '') {
 
 export const reset = createAction('RESET');
 
+// export const historyIdSet = createAction('HISTORYID_SET');
+
 export const {
-  historyAdd,
   historyDateChange,
-  historyRemarkChange
+  historyRemarkChange,
+  historyAdd,
+  historyIdSet
 } = createActions(
   {
     HISTORY_DATE_CHANGE: (value, historyId) => ({ value, historyId }),
     HISTORY_REMARK_CHANGE: (value, historyId) => ({ value, historyId })
   },
-  'HISTORY_ADD'
+  'HISTORY_ADD',
+  'HISTORY_ID_SET'
 );
 
 const {
@@ -396,6 +400,10 @@ const reducer = handleActions(
         histories.push({ id: newHistoryId, images: [] });
       }
       return { ...state, historyId: newHistoryId, histories: histories };
+    },
+    HISTORY_ID_SET: (state, action) => {
+      const historyId = parseInt(action.payload, 10);
+      return { ...state, historyId: historyId };
     },
     HISTORY_REMARK_CHANGE: (state, action) => {
       const { value, historyId } = action.payload;

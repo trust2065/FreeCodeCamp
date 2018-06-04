@@ -30,7 +30,7 @@ ReactDOM.render(
           <Route exact path="/recipe/:id" component={Recipe} />
           <Route
             exact
-            path="/recipe/:id/history/create"
+            path="/recipe/:id/history/:historyId"
             component={HistoryCreate}
           />
           <Route exact path="/recipe/:id/history" component={History} />
