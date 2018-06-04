@@ -7,7 +7,8 @@ import { Link } from 'react-router-dom';
 
 const History = connect(store => ({
   histories: store.recipe.histories,
-  recipeId: store.recipe.recipeId
+  recipeId: store.recipe.recipeId,
+  name: store.recipe.name
 }))(
   class History extends Component {
     constructor(props) {
@@ -29,6 +30,7 @@ const History = connect(store => ({
     render() {
       const { histories } = this.props;
       const recipeId = _.get(this.props, 'recipeId', '');
+      const name = _.get(this.props, 'name', '');
       const showRemark = _.get(this.state, 'showRemark', true);
 
       const historyBoxs = [];
@@ -52,6 +54,17 @@ const History = connect(store => ({
       return (
         <div className="container">
           <div className="row">
+            <div className="col-sm-6">
+              <div>
+                <label htmlFor="name">Name</label>
+                <input
+                  disabled
+                  type="text"
+                  value={name}
+                  className="form-control"
+                />
+              </div>
+            </div>
             <div className="col-sm-4 ml-auto">
               <div className="form-check float-right">
                 <input
