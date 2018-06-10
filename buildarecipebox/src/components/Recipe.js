@@ -122,19 +122,15 @@ const Recipe = connect(store => {
           );
         });
       }
-      if (steps && steps.length > 0) {
-        steps.forEach((element, i) => {
-          stepsRow.push(
-            <Step
-              key={`step_${i}`}
-              desp={element.desp}
-              onChange={e => this.handleStepChange(e, i)}
-              onDelete={() => this.handleStepDelete(i)}
-              step={element.step}
-            />
-          );
-        });
-      }
+      stepsRow = steps.map((step, i) => (
+        <Step
+          key={`step_${i}`}
+          desp={step.desp}
+          step={i + 1}
+          onChange={e => this.handleStepChange(e, i)}
+          onDelete={() => this.handleStepDelete(i)}
+        />
+      ));
 
       let styleBtnUpdateText;
       let toggleDisable = false;

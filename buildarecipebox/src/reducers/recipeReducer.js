@@ -7,6 +7,7 @@ import {
 import database from '../components/Firebase';
 import RecipeDao from '../components/RecipeDao';
 import axios from 'axios';
+import dotProp from 'dot-prop-immutable';
 
 const {
   imgUploadPending,
@@ -228,32 +229,16 @@ const reducer = handleActions(
     }),
     RESET: (state, action) => ({ ...state, updated: false }),
     STEP_CHANGE: (state, action) => {
-      let steps = [...state.steps];
-      steps[action.payload.order].desp = action.payload.changedText;
-      return { ...state, steps: steps };
+      const changedText = action.payload.changedText;
+      const order = action.payload.order;
+      return dotProp.set(state, `steps.${order}.desp`, changedText);
     },
     STEP_ADD: (state, action) => {
-      let steps = [...state.steps];
-      let newStep;
-      if (steps.length === 0) {
-        newStep = 1;
-      } else {
-        newStep = parseInt(steps[steps.length - 1].step + 1, 10);
-      }
-      steps.push({ desp: '', step: newStep });
-      return { ...state, steps: steps };
+      return dotProp.set(state, 'steps', [...state.steps, { desp: '' }]);
     },
     STEP_DELETE: (state, action) => {
       const targetIndex = action.payload;
-      let steps = [...state.steps];
-      steps.splice(targetIndex, 1);
-      steps = steps.map((step, i) => {
-        if (i >= targetIndex) {
-          step.step = step.step - 1;
-        }
-        return step;
-      });
-      return { ...state, steps: steps };
+      return dotProp.delete(state, `steps.${targetIndex}`);
     },
     INGREDIENT_CHANGE: (state, action) => {
       let ingredients = [...state.ingredients];
