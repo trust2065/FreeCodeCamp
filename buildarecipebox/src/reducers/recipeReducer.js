@@ -241,20 +241,19 @@ const reducer = handleActions(
       return dotProp.delete(state, `steps.${targetIndex}`);
     },
     INGREDIENT_CHANGE: (state, action) => {
-      let ingredients = [...state.ingredients];
-      ingredients[action.payload.order].name = action.payload.changedText;
-      return { ...state, ingredients: ingredients };
+      const changedText = action.payload.changedText;
+      const order = action.payload.order;
+      return dotProp.set(state, `ingredients.${order}.name`, changedText);
     },
     INGREDIENT_ADD: (state, action) => {
-      let ingredients = [...state.ingredients];
-      ingredients.push({ name: '' });
-      return { ...state, ingredients: ingredients };
+      return dotProp.set(state, 'ingredients', [
+        ...state.ingredients,
+        { name: '' }
+      ]);
     },
     INGREDIENT_DELETE: (state, action) => {
       const targetIndex = action.payload;
-      let ingredients = [...state.ingredients];
-      ingredients.splice(targetIndex, 1);
-      return { ...state, ingredients: ingredients };
+      return dotProp.delete(state, `ingredients.${targetIndex}`);
     },
     IMG_UPLOAD_PENDING: (state, action) => ({ ...state, uploading: true }),
     IMG_UPLOAD_FULFILL: (state, action) => ({

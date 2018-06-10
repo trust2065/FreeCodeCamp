@@ -110,18 +110,16 @@ const Recipe = connect(store => {
 
       let ingredientsRow = [];
       let stepsRow = [];
-      if (ingredients && ingredients.length > 0) {
-        ingredients.forEach((element, i) => {
-          ingredientsRow.push(
-            <Ingredient
-              key={`ingredient_${i}`}
-              onChange={e => this.handleIngredientChange(e, i)}
-              onDelete={() => this.handleIngredientDelete(i)}
-              name={element.name}
-            />
-          );
-        });
-      }
+
+      ingredientsRow = ingredients.map((ingredient, i) => (
+        <Ingredient
+          key={`ingredient_${i}`}
+          onChange={e => this.handleIngredientChange(e, i)}
+          onDelete={() => this.handleIngredientDelete(i)}
+          name={ingredient.name}
+        />
+      ));
+
       stepsRow = steps.map((step, i) => (
         <Step
           key={`step_${i}`}
