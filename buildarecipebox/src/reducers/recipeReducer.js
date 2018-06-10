@@ -175,18 +175,12 @@ const defaultState = {
 
 const reducer = handleActions(
   {
-    NAME_CHANGE: (state, action) => ({
-      ...state,
-      name: action.payload
-    }),
-    RECIPE_FETCH_PENDING: (state, action) => ({
-      ...state,
-      name: action.payload
-    }),
-    RECIPE_FETCH_FULFILL_NEWRECIPE: (state, action) => ({
-      ...defaultState,
-      recipeId: action.payload
-    }),
+    NAME_CHANGE: (state, action) => dotProp.set(state, 'name', action.payload),
+    RECIPE_FETCH_PENDING: state => dotProp.set(state, 'fetching', true),
+    RECIPE_FETCH_FULFILL_NEWRECIPE: (state, action) => {
+      const recipeId = action.payload;
+      dotProp.set(defaultState, 'recipeId', recipeId);
+    },
     RECIPE_FETCH_FULFILL: (state, action) => {
       const recipe = action.payload.recipe;
       const recipeId = action.payload.recipeId;
@@ -208,25 +202,28 @@ const reducer = handleActions(
         steps: recipe.steps
       };
     },
-    RECIPE_FETCH_REJECT: (state, action) => ({
-      ...state,
-      updating: false,
-      error: action.payload
-    }),
-    RECIPE_UPDATE_PENDING: (state, action) => ({
-      ...state,
-      updating: true
-    }),
+    RECIPE_FETCH_REJECT: (state, action) => {
+      const error = action.payload;
+      return {
+        ...state,
+        fetching: false,
+        error: error
+      };
+    },
+    RECIPE_UPDATE_PENDING: (state, action) => dotProp(state, 'updating', true),
     RECIPE_UPDATE_FULFILL: (state, action) => ({
       ...state,
       updating: false,
       updated: true
     }),
-    RECIPE_UPDATE_REJECT: (state, action) => ({
-      ...state,
-      error: action.payload,
-      fetching: false
-    }),
+    RECIPE_UPDATE_REJECT: (state, action) => {
+      const error = action.payload;
+      return {
+        ...state,
+        error: error,
+        fetching: false
+      };
+    },
     RESET: (state, action) => ({ ...state, updated: false }),
     STEP_CHANGE: (state, action) => {
       const changedText = action.payload.changedText;
@@ -255,14 +252,15 @@ const reducer = handleActions(
       const targetIndex = action.payload;
       return dotProp.delete(state, `ingredients.${targetIndex}`);
     },
-    IMG_UPLOAD_PENDING: (state, action) => ({ ...state, uploading: true }),
+    IMG_UPLOAD_PENDING: (state, action) =>
+      dotProp.set(state, 'uploading', true),
     IMG_UPLOAD_FULFILL: (state, action) => ({
       ...state,
       uploading: false,
       imgURL: action.payload
     }),
     [combineActions(imgUploadReject, imgUploadCancel)](state, action) {
-      return { ...state, uploading: false };
+      return dotProp.set(state, 'uploading', false);
     }
   },
   defaultState
