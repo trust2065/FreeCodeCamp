@@ -210,7 +210,8 @@ const reducer = handleActions(
         error: error
       };
     },
-    RECIPE_UPDATE_PENDING: (state, action) => dotProp(state, 'updating', true),
+    RECIPE_UPDATE_PENDING: (state, action) =>
+      dotProp.set(state, 'updating', true),
     RECIPE_UPDATE_FULFILL: (state, action) => ({
       ...state,
       updating: false,
