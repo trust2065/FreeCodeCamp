@@ -8,6 +8,7 @@ import {
 import database from '../components/Firebase';
 import RecipeDao from '../components/RecipeDao';
 import axios from 'axios';
+import dotProp from 'dot-prop-immutable';
 
 export const imgUploaderAdd = createAction(
   'IMGUPLOADER_ADD',
@@ -228,18 +229,12 @@ const defaultState = {
 
 const reducer = handleActions(
   {
-    NAME_CHANGE: (state, action) => ({
-      ...state,
-      name: action.payload
-    }),
-    RECIPE_FETCH_PENDING: (state, action) => ({
-      ...state,
-      name: action.payload
-    }),
-    RECIPE_FETCH_FULFILL_NEWRECIPE: (state, action) => ({
-      ...defaultState,
-      recipeId: action.payload
-    }),
+    NAME_CHANGE: (state, action) => dotProp.set(state, 'name', action.payload),
+    RECIPE_FETCH_PENDING: state => dotProp.set(state, 'fetching', true),
+    RECIPE_FETCH_FULFILL_NEWRECIPE: (state, action) => {
+      const recipeId = action.payload;
+      dotProp.set(defaultState, 'recipeId', recipeId);
+    },
     RECIPE_FETCH_FULFILL: (state, action) => {
       const recipe = action.payload.recipe;
       const recipeId = action.payload.recipeId;
@@ -256,69 +251,55 @@ const reducer = handleActions(
         histories: recipe.histories
       };
     },
-    RECIPE_FETCH_REJECT: (state, action) => ({
-      ...state,
-      updating: false,
-      error: action.payload
-    }),
-    RECIPE_UPDATE_PENDING: (state, action) => ({
-      ...state,
-      updating: true
-    }),
+    RECIPE_FETCH_REJECT: (state, action) => {
+      const error = action.payload;
+      return {
+        ...state,
+        fetching: false,
+        error: error
+      };
+    },
+    RECIPE_UPDATE_PENDING: (state, action) => dotProp(state, 'updating', true),
     RECIPE_UPDATE_FULFILL: (state, action) => ({
       ...state,
       updating: false,
       updated: true
     }),
-    RECIPE_UPDATE_REJECT: (state, action) => ({
-      ...state,
-      error: action.payload,
-      fetching: false
-    }),
+    RECIPE_UPDATE_REJECT: (state, action) => {
+      const error = action.payload;
+      return {
+        ...state,
+        error: error,
+        fetching: false
+      };
+    },
     RESET: (state, action) => ({ ...state, updated: false }),
     STEP_CHANGE: (state, action) => {
-      let steps = [...state.steps];
-      steps[action.payload.order].desp = action.payload.changedText;
-      return { ...state, steps: steps };
+      const changedText = action.payload.changedText;
+      const order = action.payload.order;
+      return dotProp.set(state, `steps.${order}.desp`, changedText);
     },
     STEP_ADD: (state, action) => {
-      let steps = [...state.steps];
-      let newStep;
-      if (steps.length === 0) {
-        newStep = 1;
-      } else {
-        newStep = parseInt(steps[steps.length - 1].step + 1, 10);
-      }
-      steps.push({ desp: '', step: newStep });
-      return { ...state, steps: steps };
+      return dotProp.set(state, 'steps', [...state.steps, { desp: '' }]);
     },
     STEP_DELETE: (state, action) => {
       const targetIndex = action.payload;
-      let steps = [...state.steps];
-      steps.splice(targetIndex, 1);
-      steps = steps.map((step, i) => {
-        if (i >= targetIndex) {
-          step.step = step.step - 1;
-        }
-        return step;
-      });
-      return { ...state, steps: steps };
+      return dotProp.delete(state, `steps.${targetIndex}`);
     },
     INGREDIENT_CHANGE: (state, action) => {
-      let ingredients = [...state.ingredients];
-      ingredients[action.payload.order].name = action.payload.changedText;
-      return { ...state, ingredients: ingredients };
+      const changedText = action.payload.changedText;
+      const order = action.payload.order;
+      return dotProp.set(state, `ingredients.${order}.name`, changedText);
     },
     INGREDIENT_ADD: (state, action) => {
-      let ingredients = [...state.ingredients];
-      ingredients.push({ name: '' });
-      return { ...state, ingredients: ingredients };
+      return dotProp.set(state, 'ingredients', [
+        ...state.ingredients,
+        { name: '' }
+      ]);
     },
     INGREDIENT_DELETE: (state, action) => {
       const targetIndex = action.payload;
-      let ingredients = [...state.ingredients];
-      ingredients.splice(targetIndex, 1);
-      return { ...state, ingredients: ingredients };
+      return dotProp.delete(state, `ingredients.${targetIndex}`);
     },
     IMGUPLOADER_ADD: (state, action) => {
       const { type } = action.payload;
@@ -343,7 +324,8 @@ const reducer = handleActions(
           return state;
       }
     },
-    IMG_UPLOAD_PENDING: (state, action) => ({ ...state, uploading: true }),
+    IMG_UPLOAD_PENDING: (state, action) =>
+      dotProp.set(state, 'uploading', true),
     IMG_UPLOAD_FULFILL: (state, action) => {
       const { type, no, url } = action.payload;
 
@@ -373,7 +355,7 @@ const reducer = handleActions(
       };
     },
     [combineActions(imgUploadReject, imgUploadCancel)](state, action) {
-      return { ...state, uploading: false };
+      return dotProp.set(state, 'uploading', false);
     },
     HISTORY_ADD: (state, action) => {
       let histories;
