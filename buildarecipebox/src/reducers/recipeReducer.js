@@ -183,8 +183,8 @@ export const {
   historyEdit
 } = createActions(
   {
-    HISTORY_DATE_CHANGE: (value, historyId) => ({ value, historyId }),
-    HISTORY_REMARK_CHANGE: (value, historyId) => ({ value, historyId })
+    HISTORY_DATE_CHANGE: (date, historyId) => ({ date, historyId }),
+    HISTORY_REMARK_CHANGE: (remark, historyId) => ({ remark, historyId })
   },
   'HISTORY_ADD',
   'HISTORY_EDIT'
@@ -279,7 +279,9 @@ const reducer = handleActions(
         fetching: false
       };
     },
-    RESET: (state, action) => ({ ...state, updated: false }),
+    RESET: (state, action) => {
+      return dotProp.set(state, 'updated', false);
+    },
     STEP_CHANGE: (state, action) => {
       const changedText = action.payload.changedText;
       const order = action.payload.order;
@@ -359,16 +361,14 @@ const reducer = handleActions(
       return dotProp.set(state, 'uploading', false);
     },
     HISTORY_ADD: (state, action) => {
-      let histories;
       let newHistoryId;
-
       if (!state.histories) {
         newHistoryId = 1;
-        histories = [
+        state = dotProp.set(state, 'histories', [
           { id: newHistoryId, date: moment().format('YYYY-MM-DD'), images: [] }
-        ];
+        ]);
       } else {
-        histories = [...state.histories];
+        const histories = state.histories;
         let lastId = 0;
 
         histories.forEach(history => {
@@ -378,75 +378,53 @@ const reducer = handleActions(
         });
         newHistoryId = lastId + 1;
 
-        histories.push({
-          id: newHistoryId,
-          date: moment().format('YYYY-MM-DD'),
-          images: []
-        });
+        state = dotProp.set(state, 'historyId', newHistoryId);
+        state = dotProp.set(state, 'histories', [
+          ...histories,
+          {
+            id: newHistoryId,
+            date: moment().format('YYYY-MM-DD'),
+            images: []
+          }
+        ]);
       }
-      return { ...state, historyId: newHistoryId, histories: histories };
+      state = dotProp.set(state, 'historyId', newHistoryId);
+      return state;
     },
     HISTORY_EDIT: (state, action) => {
-      const histories = [...state.histories];
+      const histories = state.histories;
       const historyId = parseInt(action.payload, 10);
-      let history;
 
-      const index =
-        historyId !== 0 && _.findIndex(histories, ['id', historyId]);
-      if (index !== -1) {
-        history = histories[index];
-      }
-      history = state.histories[index];
-      if (history) {
-        const hasDate = !!_.get(history, 'date');
-        const date = hasDate
-          ? _.get(history, 'date')
-          : moment().format('YYYY/MM/DD');
-        history.date = date;
+      const index = _.findIndex(histories, ['id', historyId]);
+      const history = histories[index];
 
-        histories[index] = history;
-      }
+      const hasDate = !!_.get(history, 'date');
+      const date = hasDate
+        ? _.get(history, 'date')
+        : moment().format('YYYY/MM/DD');
 
-      return { ...state, histories: histories, historyId: historyId };
+      state = dotProp.set(state, `histories.${index}.date`, date);
+      return dotProp.set(state, `historyId`, historyId);
     },
     HISTORY_REMARK_CHANGE: (state, action) => {
-      const { value, historyId } = action.payload;
-      const histories = [...state.histories];
+      const { remark, historyId } = action.payload;
+      const histories = state.histories;
 
-      let history;
-      const index =
-        historyId !== 0 && _.findIndex(histories, ['id', historyId]);
-      if (index !== -1) {
-        history = histories[index];
-      }
+      const index = _.findIndex(histories, ['id', historyId]);
 
-      if (history) {
-        history.remark = value;
-      }
-
-      return { ...state, histories: histories };
+      return dotProp.set(state, `histories.${index}.remark`, remark);
     },
     HISTORY_DATE_CHANGE: (state, action) => {
-      const { value, historyId } = action.payload;
-      const histories = [...state.histories];
+      const { date, historyId } = action.payload;
+      const histories = state.histories;
 
-      let history;
-      const index =
-        historyId !== 0 && _.findIndex(histories, ['id', historyId]);
-      if (index !== -1) {
-        history = histories[index];
-      }
+      const index = _.findIndex(histories, ['id', historyId]);
 
-      if (history) {
-        history.date = value;
-      }
-
-      return { ...state, histories: histories };
+      return dotProp.set(state, `histories.${index}.date`, date);
     },
-    HISTORY_UPDATE_PENDING: (state, action) => ({
-      ...state,
-      updating: true
-    }),
+    HISTORY_UPDATE_PENDING: (state, action) => {
+      return dotProp.set(state, 'updating', true);
+    },
     HISTORY_UPDATE_FULFILL: (state, action) => ({
       ...state,
       updating: false,
