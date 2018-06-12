@@ -22,7 +22,7 @@ class ImageUploader extends Component {
             type="file"
             id={`image_${no}`}
             style={{ display: 'none' }}
-            accept="image/"
+            accept="image/*"
             data-max-size="5000"
             onChange={onImageUpload}
           />
