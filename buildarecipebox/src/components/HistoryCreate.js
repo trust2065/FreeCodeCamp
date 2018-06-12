@@ -1,8 +1,9 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import DatePicker from 'react-datepicker';
 import ImageUploader from './ImageUploader';
 import { TextArea } from './utility';
-import { connect } from 'react-redux';
 import {
   recipeFetch,
   reset,
@@ -13,6 +14,11 @@ import {
   imgUploaderAdd,
   imgUpload
 } from '../reducers/recipeReducer';
+import moment from 'moment';
+import 'react-datepicker/dist/react-datepicker.css';
+import '../css/react-datepicker.css';
+
+import styled from 'styled-components';
 
 const HistoryCreate = connect(store => {
   return {
@@ -36,10 +42,9 @@ const HistoryCreate = connect(store => {
       });
     };
 
-    handleDateChange = e => {
-      const value = e.target.value;
+    handleDateChange = date => {
       const historyId = this.props.historyId;
-      this.props.dispatch(historyDateChange(value, historyId));
+      this.props.dispatch(historyDateChange(date, historyId));
     };
 
     handleRemarkChange = e => {
@@ -110,7 +115,7 @@ const HistoryCreate = connect(store => {
         }
       }
 
-      const date = _.get(history, 'date', '');
+      const date = _.get(history, 'date', moment());
       const remark = _.get(history, 'remark', '');
       const images = _.get(history, 'images', []);
 
@@ -162,12 +167,7 @@ const HistoryCreate = connect(store => {
               </div>
               <div>
                 <label htmlFor="date">Date</label>
-                <input
-                  type="text"
-                  value={date}
-                  onChange={this.handleDateChange}
-                  className="form-control"
-                />
+                <DatePicker selected={date} onChange={this.handleDateChange} />
               </div>
             </div>
             <div className="col-sm-6">
@@ -199,5 +199,7 @@ const HistoryCreate = connect(store => {
     }
   }
 );
+
+const StyledDatePicker = styled(DatePicker)``;
 
 export default HistoryCreate;
