@@ -11,15 +11,13 @@ import {
   historyAdd,
   historyDateChange,
   historyRemarkChange,
-  historyIdSet,
+  historyEdit,
   imgUploaderAdd,
   imgUpload
 } from '../reducers/recipeReducer';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
 import '../css/react-datepicker.css';
-
-import styled from 'styled-components';
 
 const HistoryCreate = connect(store => {
   return {
@@ -44,13 +42,14 @@ const HistoryCreate = connect(store => {
         if (historyId === 'create') {
           this.props.dispatch(historyAdd());
         } else {
-          this.props.dispatch(historyIdSet(historyId));
+          this.props.dispatch(historyEdit(historyId));
         }
       });
     };
 
-    handleDateChange = date => {
+    handleDateChange = moment => {
       const historyId = this.props.historyId;
+      const date = moment.format('YYYY/MM/DD');
       this.props.dispatch(historyDateChange(date, historyId));
     };
 
@@ -122,7 +121,8 @@ const HistoryCreate = connect(store => {
         }
       }
 
-      const date = _.get(history, 'date', moment());
+      const hasDate = !!_.get(history, 'date');
+      const date = hasDate ? moment(_.get(history, 'date')) : moment();
       const remark = _.get(history, 'remark', '');
       const images = _.get(history, 'images', []);
 
@@ -174,7 +174,11 @@ const HistoryCreate = connect(store => {
               </div>
               <div>
                 <label htmlFor="date">Date</label>
-                <DatePicker selected={date} onChange={this.handleDateChange} />
+                <DatePicker
+                  dateFormat="DD/MM/YYYY"
+                  selected={date}
+                  onChange={this.handleDateChange}
+                />
               </div>
             </div>
             <div className="col-sm-6">
@@ -206,7 +210,5 @@ const HistoryCreate = connect(store => {
     }
   }
 );
-
-const StyledDatePicker = styled(DatePicker)``;
 
 export default HistoryCreate;

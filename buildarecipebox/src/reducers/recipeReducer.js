@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import axios from 'axios';
 import {
   createAction,
   createActions,
@@ -6,9 +7,9 @@ import {
   combineActions
 } from 'redux-actions';
 import database from '../components/Firebase';
-import RecipeDao from '../components/RecipeDao';
-import axios from 'axios';
 import dotProp from 'dot-prop-immutable';
+import moment from 'moment';
+import RecipeDao from '../components/RecipeDao';
 
 export const imgUploaderAdd = createAction(
   'IMGUPLOADER_ADD',
@@ -179,14 +180,14 @@ export const {
   historyDateChange,
   historyRemarkChange,
   historyAdd,
-  historyIdSet
+  historyEdit
 } = createActions(
   {
     HISTORY_DATE_CHANGE: (value, historyId) => ({ value, historyId }),
     HISTORY_REMARK_CHANGE: (value, historyId) => ({ value, historyId })
   },
   'HISTORY_ADD',
-  'HISTORY_ID_SET'
+  'HISTORY_EDIT'
 );
 
 const {
@@ -368,7 +369,9 @@ const reducer = handleActions(
 
       if (!state.histories) {
         newHistoryId = 1;
-        histories = [{ id: newHistoryId, images: [] }];
+        histories = [
+          { id: newHistoryId, date: moment().format('YYYY-MM-DD'), images: [] }
+        ];
       } else {
         histories = [...state.histories];
         let lastId = 0;
@@ -380,13 +383,36 @@ const reducer = handleActions(
         });
         newHistoryId = lastId + 1;
 
-        histories.push({ id: newHistoryId, images: [] });
+        histories.push({
+          id: newHistoryId,
+          date: moment().format('YYYY-MM-DD'),
+          images: []
+        });
       }
       return { ...state, historyId: newHistoryId, histories: histories };
     },
-    HISTORY_ID_SET: (state, action) => {
+    HISTORY_EDIT: (state, action) => {
+      const histories = [...state.histories];
       const historyId = parseInt(action.payload, 10);
-      return { ...state, historyId: historyId };
+      let history;
+
+      const index =
+        historyId !== 0 && _.findIndex(histories, ['id', historyId]);
+      if (index !== -1) {
+        history = histories[index];
+      }
+      history = state.histories[index];
+      if (history) {
+        const hasDate = !!_.get(history, 'date');
+        const date = hasDate
+          ? _.get(history, 'date')
+          : moment().format('YYYY/MM/DD');
+        history.date = date;
+
+        histories[historyId] = history;
+      }
+
+      return { ...state, histories: histories, historyId: historyId };
     },
     HISTORY_REMARK_CHANGE: (state, action) => {
       const { value, historyId } = action.payload;
