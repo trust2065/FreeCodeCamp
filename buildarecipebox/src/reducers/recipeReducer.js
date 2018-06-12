@@ -238,7 +238,7 @@ const reducer = handleActions(
     RECIPE_FETCH_PENDING: state => dotProp.set(state, 'fetching', true),
     RECIPE_FETCH_FULFILL_NEWRECIPE: (state, action) => {
       const recipeId = action.payload;
-      dotProp.set(defaultState, 'recipeId', recipeId);
+      return dotProp.set(defaultState, 'recipeId', recipeId);
     },
     RECIPE_FETCH_FULFILL: (state, action) => {
       const recipe = action.payload.recipe;
