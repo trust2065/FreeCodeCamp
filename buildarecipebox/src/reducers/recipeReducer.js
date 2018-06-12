@@ -409,7 +409,7 @@ const reducer = handleActions(
           : moment().format('YYYY/MM/DD');
         history.date = date;
 
-        histories[historyId] = history;
+        histories[index] = history;
       }
 
       return { ...state, histories: histories, historyId: historyId };
