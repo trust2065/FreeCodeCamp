@@ -312,20 +312,20 @@ const reducer = handleActions(
       switch (type) {
         case 'History':
           const { historyId } = action.payload;
-          const histories = [...state.histories];
+          const histories = state.histories;
           const index = _.findIndex(histories, ['id', historyId]);
           const history = histories[index];
-          let images = history.images;
-          let newNo;
+          const images = _.get(history, 'images', []);
 
-          if (images.length === 0) {
-            newNo = 1;
-          } else {
-            newNo = parseInt(images[images.length - 1].no + 1, 10);
-          }
-          images.push({ url: '', no: newNo });
-          history.images = images;
-          return { ...state, histories: histories };
+          const newNo =
+            !images || images.length === 0
+              ? 1
+              : parseInt(images[images.length - 1].no + 1, 10);
+
+          return dotProp.set(state, `histories.${index}.images`, [
+            ...images,
+            { url: '', no: newNo }
+          ]);
         default:
           return state;
       }
@@ -338,20 +338,15 @@ const reducer = handleActions(
       if (type === 'History') {
         if (no) {
           const { historyId } = action.payload;
-          const histories = [...state.histories];
+          const histories = state.histories;
           const index = _.findIndex(histories, ['id', historyId]);
           const history = histories[index];
-
           let images = history.images;
 
           images[no - 1].url = url;
-          history.images = images;
 
-          return {
-            ...state,
-            uploading: false,
-            history: history
-          };
+          state = dotProp.set(state, `histories.${index}.images`, images);
+          return dotProp.set(state, `uploading`, false);
         }
       }
       return {
