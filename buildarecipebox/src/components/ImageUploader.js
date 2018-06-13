@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-// import IconTrash from 'react-icons/lib/fa/trash-alt';
 import IconTrash from 'react-icons/lib/fa/trash';
-
+import { DraggableImage } from './utility';
 class ImageUploader extends Component {
   render() {
     const {
       no,
-      onImageUpload,
+      onUpload,
+      onDelete,
+      onSwitch,
       url,
       disabled,
-      uploading,
-      handleImageDelete
+      uploading
     } = this.props;
 
     return (
@@ -27,9 +27,7 @@ class ImageUploader extends Component {
                 className="btn">
                 Select Image
               </StyledLabel>
-              <StyledButton
-                className="btn ml-2"
-                onClick={e => handleImageDelete(e, no)}>
+              <StyledButton className="btn ml-2" onClick={e => onDelete(e, no)}>
                 <IconTrash />
               </StyledButton>
             </div>
@@ -41,11 +39,15 @@ class ImageUploader extends Component {
             style={{ display: 'none' }}
             accept="image/*"
             data-max-size="5000"
-            onChange={onImageUpload}
+            onChange={onUpload}
           />
         </form>
         {!url ||
-          (url !== '' && <img className="img-fluid" src={url} alt="img" />)}
+          (url !== '' && (
+            <DraggableImage no={no} onSwitch={onSwitch}>
+              <img className="img-fluid" src={url} alt="img" />
+            </DraggableImage>
+          ))}
       </div>
     );
   }

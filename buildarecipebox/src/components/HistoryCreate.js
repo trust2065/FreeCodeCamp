@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import DatePicker from 'react-datepicker';
 import ImageUploader from './ImageUploader';
-import { TextArea } from './utility';
+import { TextArea, DragDropZone } from './utility';
 import {
   recipeFetch,
   reset,
@@ -14,7 +14,8 @@ import {
   historyEdit,
   imgUploaderAdd,
   imgUpload,
-  imageDelete
+  imageDelete,
+  imageSwitch
 } from '../reducers/recipeReducer';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -80,6 +81,13 @@ const HistoryCreate = connect(store => {
       e.preventDefault();
       const { historyId } = this.props;
       this.props.dispatch(imageDelete('History', no, historyId));
+    };
+
+    handleSwitch = (sourceNo, targetNo) => {
+      const { historyId } = this.props;
+      this.props.dispatch(
+        imageSwitch('History', sourceNo, targetNo, historyId)
+      );
     };
 
     render() {
@@ -150,8 +158,9 @@ const HistoryCreate = connect(store => {
                 url={url}
                 disabled={toggleDisable}
                 uploading={uploading}
-                onImageUpload={e => this.handleImageUpload(e, no)}
-                handleImageDelete={this.handleImageDelete}
+                onUpload={e => this.handleImageUpload(e, no)}
+                onDelete={this.handleImageDelete}
+                onSwitch={this.handleSwitch}
               />
             </div>
           );
@@ -212,7 +221,9 @@ const HistoryCreate = connect(store => {
               </button>
             </div>
           </div>
-          <div className="row mt-5">{imageUploaders}</div>
+          <div className="row mt-5">
+            <DragDropZone>{imageUploaders}</DragDropZone>
+          </div>
         </div>
       );
     }

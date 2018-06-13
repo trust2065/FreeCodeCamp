@@ -23,6 +23,15 @@ export const imageDelete = createAction(
     historyId
   })
 );
+export const imageSwitch = createAction(
+  'IMG_SWITCH',
+  (type, sourceNo, targetNo, historyId) => ({
+    type,
+    sourceNo,
+    targetNo,
+    historyId
+  })
+);
 
 const {
   imgUploadFulfill,
@@ -384,6 +393,36 @@ const reducer = handleActions(
         state = dotProp.delete(
           state,
           `histories.${historyIndex}.images.${imageIndex}`
+        );
+      }
+      return state;
+    },
+    IMG_SWITCH: (state, action) => {
+      const type = action.payload.type;
+      if (type === 'History') {
+        const sourceNo = action.payload.sourceNo;
+        const targetNo = action.payload.targetNo;
+        const historyId = action.payload.historyId;
+        const histories = state.histories;
+        const historyIndex = _.findIndex(histories, ['id', historyId]);
+
+        const history = histories[historyIndex];
+        const images = history.images;
+
+        const imageSourceIndex = _.findIndex(images, ['no', sourceNo]);
+        const imageTargetIndex = _.findIndex(images, ['no', targetNo]);
+        const imageSource = images[imageSourceIndex];
+        const imageTarget = images[imageTargetIndex];
+
+        state = dotProp.set(
+          state,
+          `histories.${historyIndex}.images.${imageSourceIndex}`,
+          imageTarget
+        );
+        state = dotProp.set(
+          state,
+          `histories.${historyIndex}.images.${imageTargetIndex}`,
+          imageSource
         );
       }
       return state;
