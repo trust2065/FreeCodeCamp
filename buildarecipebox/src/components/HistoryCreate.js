@@ -13,7 +13,8 @@ import {
   historyRemarkChange,
   historyEdit,
   imgUploaderAdd,
-  imgUpload
+  imgUpload,
+  imageDelete
 } from '../reducers/recipeReducer';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -73,6 +74,12 @@ const HistoryCreate = connect(store => {
       console.log('onImageUpload');
       const { historyId } = this.props;
       this.props.dispatch(imgUpload(e, 'History', no, historyId));
+    };
+
+    handleImageDelete = (e, no) => {
+      e.preventDefault();
+      const { historyId } = this.props;
+      this.props.dispatch(imageDelete('History', no, historyId));
     };
 
     render() {
@@ -144,6 +151,7 @@ const HistoryCreate = connect(store => {
                 disabled={toggleDisable}
                 uploading={uploading}
                 onImageUpload={e => this.handleImageUpload(e, no)}
+                handleImageDelete={this.handleImageDelete}
               />
             </div>
           );

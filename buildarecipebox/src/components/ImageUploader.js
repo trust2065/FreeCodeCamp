@@ -1,21 +1,38 @@
 import React, { Component } from 'react';
+import styled from 'styled-components';
+// import IconTrash from 'react-icons/lib/fa/trash-alt';
+import IconTrash from 'react-icons/lib/fa/trash';
 
 class ImageUploader extends Component {
   render() {
-    const { no, onImageUpload, url, disabled, uploading } = this.props;
+    const {
+      no,
+      onImageUpload,
+      url,
+      disabled,
+      uploading,
+      handleImageDelete
+    } = this.props;
 
     return (
       <div>
         <form id="formImage">
           {uploading ? (
-            <label className="btn btn-block mt-2">Uploading</label>
+            <label className="btn btn-block mt-2 mb-2">Uploading</label>
           ) : (
-            <label
-              htmlFor={`image_${no}`}
-              type="button"
-              className="btn btn-block mt-2">
-              Select Image
-            </label>
+            <div className="d-flex justify-content-between mt-2 mb-2">
+              <StyledLabel
+                htmlFor={`image_${no}`}
+                type="button"
+                className="btn">
+                Select Image
+              </StyledLabel>
+              <StyledButton
+                className="btn ml-2"
+                onClick={e => handleImageDelete(e, no)}>
+                <IconTrash />
+              </StyledButton>
+            </div>
           )}
           <input
             disabled={disabled}
@@ -33,5 +50,13 @@ class ImageUploader extends Component {
     );
   }
 }
+
+const StyledLabel = styled.label`
+  flex: 3;
+  margin: 0;
+`;
+const StyledButton = styled.button`
+  flex: 1;
+`;
 
 export default ImageUploader;

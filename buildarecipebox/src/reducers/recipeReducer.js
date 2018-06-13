@@ -15,6 +15,14 @@ export const imgUploaderAdd = createAction(
   'IMGUPLOADER_ADD',
   (type, historyId) => ({ type, historyId })
 );
+export const imageDelete = createAction(
+  'IMG_DELETE',
+  (type, no, historyId) => ({
+    type,
+    no,
+    historyId
+  })
+);
 
 const {
   imgUploadFulfill,
@@ -341,13 +349,16 @@ const reducer = handleActions(
         if (no) {
           const { historyId } = action.payload;
           const histories = state.histories;
-          const index = _.findIndex(histories, ['id', historyId]);
-          const history = histories[index];
-          let images = history.images;
+          const historyIndex = _.findIndex(histories, ['id', historyId]);
+          const history = histories[historyIndex];
+          const images = history.images;
+          const imageIndex = _.findIndex(images, ['no', no]);
 
-          images[no - 1].url = url;
-
-          state = dotProp.set(state, `histories.${index}.images`, images);
+          state = dotProp.set(
+            state,
+            `histories.${historyIndex}.images.${imageIndex}.url`,
+            url
+          );
           return dotProp.set(state, `uploading`, false);
         }
       }
@@ -356,6 +367,26 @@ const reducer = handleActions(
         uploading: false,
         imgURL: url
       };
+    },
+    IMG_DELETE: (state, action) => {
+      const type = action.payload.type;
+      if (type === 'History') {
+        const no = action.payload.no;
+        const historyId = action.payload.historyId;
+        const histories = state.histories;
+        const historyIndex = _.findIndex(histories, ['id', historyId]);
+
+        const history = histories[historyIndex];
+        const images = history.images;
+
+        const imageIndex = _.findIndex(images, ['no', no]);
+
+        state = dotProp.delete(
+          state,
+          `histories.${historyIndex}.images.${imageIndex}`
+        );
+      }
+      return state;
     },
     [combineActions(imgUploadReject, imgUploadCancel)](state, action) {
       return dotProp.set(state, 'uploading', false);
