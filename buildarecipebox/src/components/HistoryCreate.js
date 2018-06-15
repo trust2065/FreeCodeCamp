@@ -2,8 +2,7 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import DatePicker from 'react-datepicker';
-import ImageUploader from './ImageUploader';
-import { TextArea, DragDropZone } from './utility';
+import { TextArea, DragDropZone, ImageUploader } from './utility';
 import {
   recipeFetch,
   reset,

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import IconTrash from 'react-icons/lib/fa/trash';
-import { DraggableImage } from './utility';
+import { DraggableImage } from './';
 class ImageUploader extends Component {
   render() {
     const {
