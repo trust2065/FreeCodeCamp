@@ -1,8 +1,9 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
-import ImageUploader from './ImageUploader';
-import { TextArea } from './utility';
 import { connect } from 'react-redux';
+import DatePicker from 'react-datepicker';
+import ImageUploader from './ImageUploader';
+import { TextArea, DragDropZone } from './utility';
 import {
   recipeFetch,
   reset,
@@ -10,10 +11,15 @@ import {
   historyAdd,
   historyDateChange,
   historyRemarkChange,
-  historyIdSet,
+  historyEdit,
   imgUploaderAdd,
-  imgUpload
+  imgUpload,
+  imageDelete,
+  imageSwitch
 } from '../reducers/recipeReducer';
+import moment from 'moment';
+import 'react-datepicker/dist/react-datepicker.css';
+import '../css/react-datepicker.css';
 
 const HistoryCreate = connect(store => {
   return {
@@ -38,15 +44,15 @@ const HistoryCreate = connect(store => {
         if (historyId === 'create') {
           this.props.dispatch(historyAdd());
         } else {
-          this.props.dispatch(historyIdSet(historyId));
+          this.props.dispatch(historyEdit(historyId));
         }
       });
     };
 
-    handleDateChange = e => {
-      const value = e.target.value;
+    handleDateChange = moment => {
       const historyId = this.props.historyId;
-      this.props.dispatch(historyDateChange(value, historyId));
+      const date = moment.format('YYYY/MM/DD');
+      this.props.dispatch(historyDateChange(date, historyId));
     };
 
     handleRemarkChange = e => {
@@ -69,6 +75,19 @@ const HistoryCreate = connect(store => {
       console.log('onImageUpload');
       const { historyId } = this.props;
       this.props.dispatch(imgUpload(e, 'History', no, historyId));
+    };
+
+    handleImageDelete = (e, no) => {
+      e.preventDefault();
+      const { historyId } = this.props;
+      this.props.dispatch(imageDelete('History', no, historyId));
+    };
+
+    handleSwitch = (sourceNo, targetNo) => {
+      const { historyId } = this.props;
+      this.props.dispatch(
+        imageSwitch('History', sourceNo, targetNo, historyId)
+      );
     };
 
     render() {
@@ -117,7 +136,8 @@ const HistoryCreate = connect(store => {
         }
       }
 
-      const date = _.get(history, 'date', '');
+      const hasDate = !!_.get(history, 'date');
+      const date = hasDate ? moment(_.get(history, 'date')) : moment();
       const remark = _.get(history, 'remark', '');
       const images = _.get(history, 'images', []);
 
@@ -138,7 +158,9 @@ const HistoryCreate = connect(store => {
                 url={url}
                 disabled={toggleDisable}
                 uploading={uploading}
-                onImageUpload={e => this.handleImageUpload(e, no)}
+                onUpload={e => this.handleImageUpload(e, no)}
+                onDelete={this.handleImageDelete}
+                onSwitch={this.handleSwitch}
               />
             </div>
           );
@@ -169,11 +191,10 @@ const HistoryCreate = connect(store => {
               </div>
               <div>
                 <label htmlFor="date">Date</label>
-                <input
-                  type="text"
-                  value={date}
+                <DatePicker
+                  dateFormat="DD/MM/YYYY"
+                  selected={date}
                   onChange={this.handleDateChange}
-                  className="form-control"
                 />
               </div>
             </div>
@@ -200,7 +221,9 @@ const HistoryCreate = connect(store => {
               </button>
             </div>
           </div>
-          <div className="row mt-5">{imageUploaders}</div>
+          <div className="row mt-5">
+            <DragDropZone>{imageUploaders}</DragDropZone>
+          </div>
         </div>
       );
     }

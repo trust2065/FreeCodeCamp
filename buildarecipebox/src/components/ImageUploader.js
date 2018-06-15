@@ -1,37 +1,64 @@
 import React, { Component } from 'react';
-
+import styled from 'styled-components';
+import IconTrash from 'react-icons/lib/fa/trash';
+import { DraggableImage } from './utility';
 class ImageUploader extends Component {
   render() {
-    const { no, onImageUpload, url, disabled, uploading } = this.props;
+    const {
+      no,
+      onUpload,
+      onDelete,
+      onSwitch,
+      url,
+      disabled,
+      uploading
+    } = this.props;
 
     return (
       <div>
         <form id="formImage">
           {uploading ? (
-            <label className="btn btn-block mt-2">Uploading</label>
+            <label className="btn btn-block mt-2 mb-2">Uploading</label>
           ) : (
-            <label
-              htmlFor={`image_${no}`}
-              type="button"
-              className="btn btn-block mt-2">
-              Select Image
-            </label>
+            <div className="d-flex justify-content-between mt-2 mb-2">
+              <StyledLabel
+                htmlFor={`image_${no}`}
+                type="button"
+                className="btn">
+                Select Image
+              </StyledLabel>
+              <StyledButton className="btn ml-2" onClick={e => onDelete(e, no)}>
+                <IconTrash />
+              </StyledButton>
+            </div>
           )}
           <input
             disabled={disabled}
             type="file"
             id={`image_${no}`}
             style={{ display: 'none' }}
-            accept="image/"
+            accept="image/*"
             data-max-size="5000"
-            onChange={onImageUpload}
+            onChange={onUpload}
           />
         </form>
         {!url ||
-          (url !== '' && <img className="img-fluid" src={url} alt="img" />)}
+          (url !== '' && (
+            <DraggableImage no={no} onSwitch={onSwitch}>
+              <img className="img-fluid" src={url} alt="img" />
+            </DraggableImage>
+          ))}
       </div>
     );
   }
 }
+
+const StyledLabel = styled.label`
+  flex: 3;
+  margin: 0;
+`;
+const StyledButton = styled.button`
+  flex: 1;
+`;
 
 export default ImageUploader;
