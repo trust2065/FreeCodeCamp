@@ -2,7 +2,7 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import DatePicker from 'react-datepicker';
-import { TextArea, DragDropZone, ImageUploader } from './utility';
+import { TextArea, DragDropZone, ImageUploader } from '../../components';
 import {
   recipeFetch,
   reset,
@@ -15,10 +15,10 @@ import {
   imgUpload,
   imageDelete,
   imageSwitch
-} from '../reducers/recipeReducer';
+} from '../../reducers/recipeReducer';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
-import '../css/react-datepicker.css';
+import '../../css/react-datepicker.css';
 
 const HistoryCreate = connect(store => {
   return {

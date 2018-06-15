@@ -2,8 +2,8 @@ import _ from 'lodash';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { connect } from 'react-redux';
 import React, { Component } from 'react';
-import Ingredient from './Ingredient.js';
-import Step from './Step.js';
+import Ingredient from './components/Ingredient';
+import Step from './components/Step';
 import { Link } from 'react-router-dom';
 import {
   imgUpload,
@@ -17,7 +17,7 @@ import {
   recipeFetch,
   recipeUpdate,
   reset
-} from '../reducers/recipeReducer';
+} from '../../reducers/recipeReducer';
 
 // let recipeId;
 const Recipe = connect(store => {

@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
-import HistoryBox from './utility/HistoryBox';
-import { recipeFetch } from '../reducers/recipeReducer';
+import { HistoryBox } from '../../components';
+import { recipeFetch } from '../../reducers/recipeReducer';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 

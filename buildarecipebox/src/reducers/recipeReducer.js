@@ -6,10 +6,10 @@ import {
   handleActions,
   combineActions
 } from 'redux-actions';
-import { Firebase as database } from '../components/utility';
+import database from '../modules/core/Firebase';
+import FirebaseActions from '../modules/core/RecipeDao';
 import dotProp from 'dot-prop-immutable';
 import moment from 'moment';
-import RecipeDao from '../components/RecipeDao';
 
 export const imgUploaderAdd = createAction(
   'IMGUPLOADER_ADD',
@@ -138,7 +138,7 @@ export function recipeFetch(recipeId) {
         } else {
           // get last id
           let lastId = 0;
-          RecipeDao.getList(snapshot => {
+          FirebaseActions.getList(snapshot => {
             snapshot.forEach(function(childSnapshot) {
               let key = childSnapshot.key;
               if (parseInt(key, 10) > parseInt(lastId, 10)) {

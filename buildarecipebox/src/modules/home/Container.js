@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import RecipeDao from './RecipeDao';
-import RecipeRow from './RecipeRow';
-import '../css/Home.css';
+import RecipeDao from '../core/RecipeDao';
+import { RecipeRow } from './components';
+import './Home.css';
 import $ from 'jquery';
 import 'datatables.net';
 class Home extends Component {

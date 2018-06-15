@@ -1,12 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './css/Recipe.css';
-// import App from "./components/App";
-import Recipe from './components/Recipe';
-import Header from './components/Header';
-import Home from './components/Home';
-import History from './components/History';
-import HistoryCreate from './components/HistoryCreate';
+import { Header } from './modules/core';
+import Home from './modules/home';
+import Recipe from './modules/recipe';
+import History from './modules/history';
+import HistoryCreate from './modules/historyDetail';
 import registerServiceWorker from './registerServiceWorker';
 import {
   BrowserRouter as Router,

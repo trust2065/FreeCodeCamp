@@ -1,9 +1,9 @@
-import { Firebase as database } from './utility';
+import Firebase from './Firebase';
 
 export function get(id, callback) {
   console.log('getRecipe');
 
-  let recipeRef = database.ref(`recipe/${id}`);
+  let recipeRef = Firebase.ref(`recipe/${id}`);
   recipeRef.on('value', function(snapshot) {
     // console.log('getRecipe result: ');
     let recipe = snapshot.val();
@@ -20,8 +20,7 @@ export function update(id, data, callback) {
 
   let { name, ingredients, steps } = data;
 
-  database
-    .ref('recipe/' + id)
+  Firebase.ref('recipe/' + id)
     .update({ name: name, ingredients: ingredients, steps: steps })
     .then(() => {
       if (callback) {
@@ -35,7 +34,7 @@ export function update(id, data, callback) {
 
 export function getList(callback) {
   console.log('getRecipeList');
-  database.ref('recipe').once('value', function(snapshot) {
+  Firebase.ref('recipe').once('value', function(snapshot) {
     if (callback) {
       callback(snapshot);
     }
