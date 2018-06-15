@@ -6,7 +6,7 @@ import {
   handleActions,
   combineActions
 } from 'redux-actions';
-import database from '../components/Firebase';
+import { Firebase as database } from '../components/utility';
 import dotProp from 'dot-prop-immutable';
 import moment from 'moment';
 import RecipeDao from '../components/RecipeDao';

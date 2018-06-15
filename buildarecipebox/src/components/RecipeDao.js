@@ -1,4 +1,4 @@
-import database from './Firebase.js';
+import { Firebase as database } from './utility';
 
 export function get(id, callback) {
   console.log('getRecipe');
