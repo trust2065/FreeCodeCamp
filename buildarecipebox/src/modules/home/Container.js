@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import RecipeDao from '../core/RecipeDao';
+import FirebaseAction from '../core/FirebaseAction';
 import { RecipeRow } from './components';
 import './Home.css';
 import $ from 'jquery';
@@ -13,7 +13,7 @@ class Home extends Component {
 
   componentDidMount() {
     let rows = [];
-    RecipeDao.getList(snapshot => {
+    FirebaseAction.getList(snapshot => {
       snapshot.forEach(child => {
         let key = child.key;
         let recipe = child.val();
