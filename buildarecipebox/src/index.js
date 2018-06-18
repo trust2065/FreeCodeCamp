@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './css/Recipe.css';
+import './modules/core/general.css';
 import { Header } from './modules/core';
 import Home from './modules/home';
 import Recipe from './modules/recipe';

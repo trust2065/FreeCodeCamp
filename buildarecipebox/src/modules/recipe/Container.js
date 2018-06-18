@@ -1,9 +1,8 @@
 import _ from 'lodash';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { connect } from 'react-redux';
+import { Ingredient, Step } from './components';
 import React, { Component } from 'react';
-import Ingredient from './components/Ingredient';
-import Step from './components/Step';
 import { Link } from 'react-router-dom';
 import {
   imgUpload,

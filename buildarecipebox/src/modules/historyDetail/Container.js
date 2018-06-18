@@ -18,7 +18,7 @@ import {
 } from '../../reducers/recipeReducer';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
-import '../../css/react-datepicker.css';
+import '../core/react-datepicker.css';
 
 const HistoryCreate = connect(store => {
   return {
