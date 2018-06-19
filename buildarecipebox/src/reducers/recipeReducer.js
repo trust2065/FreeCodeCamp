@@ -249,262 +249,339 @@ const defaultState = {
   historyId: 0
 };
 
-const reducer = handleActions(
-  {
-    NAME_CHANGE: (state, action) => dotProp.set(state, 'name', action.payload),
-    RECIPE_FETCH_PENDING: state => dotProp.set(state, 'fetching', true),
-    RECIPE_FETCH_FULFILL_NEWRECIPE: (state, action) => {
-      const recipeId = action.payload;
-      return dotProp.set(defaultState, 'recipeId', recipeId);
-    },
-    RECIPE_FETCH_FULFILL: (state, action) => {
-      const recipe = action.payload.recipe;
-      const recipeId = action.payload.recipeId;
+const nameChangeHandler = (state, action) =>
+  dotProp.set(state, 'name', action.payload);
 
-      return {
-        ...state,
-        fetching: false,
-        fetched: true,
-        imgURL: recipe.imgURL,
-        ingredients: recipe.ingredients,
-        name: recipe.name,
-        recipeId: recipeId,
-        steps: recipe.steps,
-        histories: recipe.histories
-      };
-    },
-    RECIPE_FETCH_REJECT: (state, action) => {
-      const error = action.payload;
-      return {
-        ...state,
-        fetching: false,
-        error: error
-      };
-    },
-    RECIPE_UPDATE_PENDING: (state, action) =>
-      dotProp.set(state, 'updating', true),
-    RECIPE_UPDATE_FULFILL: (state, action) => ({
-      ...state,
-      updating: false,
-      updated: true
-    }),
-    RECIPE_UPDATE_REJECT: (state, action) => {
-      const error = action.payload;
-      return {
-        ...state,
-        error: error,
-        fetching: false
-      };
-    },
-    RESET: (state, action) => {
-      return dotProp.set(state, 'updated', false);
-    },
-    STEP_CHANGE: (state, action) => {
-      const changedText = action.payload.changedText;
-      const order = action.payload.order;
-      return dotProp.set(state, `steps.${order}.desp`, changedText);
-    },
-    STEP_ADD: (state, action) => {
-      return dotProp.set(state, 'steps', [...state.steps, { desp: '' }]);
-    },
-    STEP_DELETE: (state, action) => {
-      const targetIndex = action.payload;
-      return dotProp.delete(state, `steps.${targetIndex}`);
-    },
-    INGREDIENT_CHANGE: (state, action) => {
-      const changedText = action.payload.changedText;
-      const order = action.payload.order;
-      return dotProp.set(state, `ingredients.${order}.name`, changedText);
-    },
-    INGREDIENT_ADD: (state, action) => {
-      return dotProp.set(state, 'ingredients', [
-        ...state.ingredients,
-        { name: '' }
-      ]);
-    },
-    INGREDIENT_DELETE: (state, action) => {
-      const targetIndex = action.payload;
-      return dotProp.delete(state, `ingredients.${targetIndex}`);
-    },
-    IMGUPLOADER_ADD: (state, action) => {
-      const { type } = action.payload;
-      switch (type) {
-        case 'History':
-          const { historyId } = action.payload;
-          const histories = state.histories;
-          const index = _.findIndex(histories, ['id', historyId]);
-          const history = histories[index];
-          const images = _.get(history, 'images', []);
+const recipeFetchPendingHandler = state => dotProp.set(state, 'fetching', true);
 
-          const newNo =
-            !images || images.length === 0
-              ? 1
-              : parseInt(images[images.length - 1].no + 1, 10);
+const recipeFetchFulfillNewrecipeHandler = (state, action) => {
+  const recipeId = action.payload;
+  return dotProp.set(defaultState, 'recipeId', recipeId);
+};
 
-          return dotProp.set(state, `histories.${index}.images`, [
-            ...images,
-            { url: '', no: newNo }
-          ]);
-        default:
-          return state;
-      }
-    },
-    IMG_UPLOAD_PENDING: (state, action) =>
-      dotProp.set(state, 'uploading', true),
-    IMG_UPLOAD_FULFILL: (state, action) => {
-      const { type, no, url } = action.payload;
+const recipeFetchFulfillHandler = (state, action) => {
+  const recipe = action.payload.recipe;
+  const recipeId = action.payload.recipeId;
 
-      if (type === 'History') {
-        if (no) {
-          const { historyId } = action.payload;
-          const histories = state.histories;
-          const historyIndex = _.findIndex(histories, ['id', historyId]);
-          const history = histories[historyIndex];
-          const images = history.images;
-          const imageIndex = _.findIndex(images, ['no', no]);
+  return {
+    ...state,
+    fetching: false,
+    fetched: true,
+    imgURL: recipe.imgURL,
+    ingredients: recipe.ingredients,
+    name: recipe.name,
+    recipeId: recipeId,
+    steps: recipe.steps,
+    histories: recipe.histories
+  };
+};
 
-          state = dotProp.set(
-            state,
-            `histories.${historyIndex}.images.${imageIndex}.url`,
-            url
-          );
-          return dotProp.set(state, `uploading`, false);
-        }
-      }
-      return {
-        ...state,
-        uploading: false,
-        imgURL: url
-      };
-    },
-    IMG_DELETE: (state, action) => {
-      const type = action.payload.type;
-      if (type === 'History') {
-        const no = action.payload.no;
-        const historyId = action.payload.historyId;
-        const histories = state.histories;
-        const historyIndex = _.findIndex(histories, ['id', historyId]);
+const recipeFetctRejectHandler = (state, action) => {
+  const error = action.payload;
+  return {
+    ...state,
+    fetching: false,
+    error: error
+  };
+};
 
-        const history = histories[historyIndex];
-        const images = history.images;
+const recipeUpdatePendingHandler = (state, action) =>
+  dotProp.set(state, 'updating', true);
 
-        const imageIndex = _.findIndex(images, ['no', no]);
+const recipeUpdateFulfillHandler = (state, action) => ({
+  ...state,
+  updating: false,
+  updated: true
+});
 
-        state = dotProp.delete(
-          state,
-          `histories.${historyIndex}.images.${imageIndex}`
-        );
-      }
-      return state;
-    },
-    IMG_SWITCH: (state, action) => {
-      const type = action.payload.type;
-      if (type === 'History') {
-        const sourceNo = action.payload.sourceNo;
-        const targetNo = action.payload.targetNo;
-        const historyId = action.payload.historyId;
-        const histories = state.histories;
-        const historyIndex = _.findIndex(histories, ['id', historyId]);
+const recipeUpdateRejectHandler = (state, action) => {
+  const error = action.payload;
+  return {
+    ...state,
+    error: error,
+    fetching: false
+  };
+};
 
-        const history = histories[historyIndex];
-        const images = history.images;
+const resetHandler = (state, action) => {
+  return dotProp.set(state, 'updated', false);
+};
 
-        const imageSourceIndex = _.findIndex(images, ['no', sourceNo]);
-        const imageTargetIndex = _.findIndex(images, ['no', targetNo]);
-        const imageSource = images[imageSourceIndex];
-        const imageTarget = images[imageTargetIndex];
+const stepChangeHandler = (state, action) => {
+  const changedText = action.payload.changedText;
+  const order = action.payload.order;
+  return dotProp.set(state, `steps.${order}.desp`, changedText);
+};
 
-        state = dotProp.set(
-          state,
-          `histories.${historyIndex}.images.${imageSourceIndex}`,
-          imageTarget
-        );
-        state = dotProp.set(
-          state,
-          `histories.${historyIndex}.images.${imageTargetIndex}`,
-          imageSource
-        );
-      }
-      return state;
-    },
-    [combineActions(imgUploadReject, imgUploadCancel)](state, action) {
-      return dotProp.set(state, 'uploading', false);
-    },
-    HISTORY_ADD: (state, action) => {
-      let newHistoryId;
-      if (!state.histories) {
-        newHistoryId = 1;
-        state = dotProp.set(state, 'histories', [
-          { id: newHistoryId, date: moment().format('YYYY-MM-DD'), images: [] }
-        ]);
-      } else {
-        const histories = state.histories;
-        let lastId = 0;
+const stepAddHandler = (state, action) => {
+  return dotProp.set(state, 'steps', [...state.steps, { desp: '' }]);
+};
 
-        histories.forEach(history => {
-          if (parseInt(history.id, 10) > lastId) {
-            lastId = history.id;
-          }
-        });
-        newHistoryId = lastId + 1;
+const stepDeleteHandler = (state, action) => {
+  const targetIndex = action.payload;
+  return dotProp.delete(state, `steps.${targetIndex}`);
+};
 
-        state = dotProp.set(state, 'historyId', newHistoryId);
-        state = dotProp.set(state, 'histories', [
-          ...histories,
-          {
-            id: newHistoryId,
-            date: moment().format('YYYY-MM-DD'),
-            images: []
-          }
-        ]);
-      }
-      state = dotProp.set(state, 'historyId', newHistoryId);
-      return state;
-    },
-    HISTORY_EDIT: (state, action) => {
+const stepHandlers = {
+  [stepChange]: stepChangeHandler,
+  [stepAdd]: stepAddHandler,
+  [stepDelete]: stepDeleteHandler
+};
+
+const ingredientChangeHandler = (state, action) => {
+  const changedText = action.payload.changedText;
+  const order = action.payload.order;
+  return dotProp.set(state, `ingredients.${order}.name`, changedText);
+};
+
+const ingredientAddHandler = (state, action) => {
+  return dotProp.set(state, 'ingredients', [
+    ...state.ingredients,
+    { name: '' }
+  ]);
+};
+
+const ingredientDeleteHandler = (state, action) => {
+  const targetIndex = action.payload;
+  return dotProp.delete(state, `ingredients.${targetIndex}`);
+};
+
+const ingredientChangeHandlers = {
+  [ingredientChange]: ingredientChangeHandler,
+  [ingredientAdd]: ingredientAddHandler,
+  [ingredientDelete]: ingredientDeleteHandler
+};
+
+const imgUploaderAddHandler = (state, action) => {
+  const { type } = action.payload;
+  switch (type) {
+    case 'History':
+      const { historyId } = action.payload;
       const histories = state.histories;
-      const historyId = parseInt(action.payload, 10);
-
       const index = _.findIndex(histories, ['id', historyId]);
       const history = histories[index];
+      const images = _.get(history, 'images', []);
 
-      const hasDate = !!_.get(history, 'date');
-      const date = hasDate
-        ? _.get(history, 'date')
-        : moment().format('YYYY/MM/DD');
+      const newNo =
+        !images || images.length === 0
+          ? 1
+          : parseInt(images[images.length - 1].no + 1, 10);
 
-      state = dotProp.set(state, `histories.${index}.date`, date);
-      return dotProp.set(state, `historyId`, historyId);
-    },
-    HISTORY_REMARK_CHANGE: (state, action) => {
-      const { remark, historyId } = action.payload;
+      return dotProp.set(state, `histories.${index}.images`, [
+        ...images,
+        { url: '', no: newNo }
+      ]);
+    default:
+      return state;
+  }
+};
+
+const imgUploadPendingHandler = (state, action) =>
+  dotProp.set(state, 'uploading', true);
+
+const imgUploadFulfillHandler = (state, action) => {
+  const { type, no, url } = action.payload;
+
+  if (type === 'History') {
+    if (no) {
+      const { historyId } = action.payload;
       const histories = state.histories;
+      const historyIndex = _.findIndex(histories, ['id', historyId]);
+      const history = histories[historyIndex];
+      const images = history.images;
+      const imageIndex = _.findIndex(images, ['no', no]);
 
-      const index = _.findIndex(histories, ['id', historyId]);
+      state = dotProp.set(
+        state,
+        `histories.${historyIndex}.images.${imageIndex}.url`,
+        url
+      );
+      return dotProp.set(state, `uploading`, false);
+    }
+  }
+  return {
+    ...state,
+    uploading: false,
+    imgURL: url
+  };
+};
 
-      return dotProp.set(state, `histories.${index}.remark`, remark);
-    },
-    HISTORY_DATE_CHANGE: (state, action) => {
-      const { date, historyId } = action.payload;
-      const histories = state.histories;
+const imageDeleteHandler = (state, action) => {
+  const type = action.payload.type;
+  if (type === 'History') {
+    const no = action.payload.no;
+    const historyId = action.payload.historyId;
+    const histories = state.histories;
+    const historyIndex = _.findIndex(histories, ['id', historyId]);
 
-      const index = _.findIndex(histories, ['id', historyId]);
+    const history = histories[historyIndex];
+    const images = history.images;
 
-      return dotProp.set(state, `histories.${index}.date`, date);
-    },
-    HISTORY_UPDATE_PENDING: (state, action) => {
-      return dotProp.set(state, 'updating', true);
-    },
-    HISTORY_UPDATE_FULFILL: (state, action) => ({
-      ...state,
-      updating: false,
-      updated: true
-    }),
-    HISTORY_UPDATE_REJECT: (state, action) => ({
-      ...state,
-      error: action.payload,
-      fetching: false
-    })
+    const imageIndex = _.findIndex(images, ['no', no]);
+
+    state = dotProp.delete(
+      state,
+      `histories.${historyIndex}.images.${imageIndex}`
+    );
+  }
+  return state;
+};
+
+const imageSwitchHandler = (state, action) => {
+  const type = action.payload.type;
+  if (type === 'History') {
+    const sourceNo = action.payload.sourceNo;
+    const targetNo = action.payload.targetNo;
+    const historyId = action.payload.historyId;
+    const histories = state.histories;
+    const historyIndex = _.findIndex(histories, ['id', historyId]);
+
+    const history = histories[historyIndex];
+    const images = history.images;
+
+    const imageSourceIndex = _.findIndex(images, ['no', sourceNo]);
+    const imageTargetIndex = _.findIndex(images, ['no', targetNo]);
+    const imageSource = images[imageSourceIndex];
+    const imageTarget = images[imageTargetIndex];
+
+    state = dotProp.set(
+      state,
+      `histories.${historyIndex}.images.${imageSourceIndex}`,
+      imageTarget
+    );
+    state = dotProp.set(
+      state,
+      `histories.${historyIndex}.images.${imageTargetIndex}`,
+      imageSource
+    );
+  }
+  return state;
+};
+
+const imageHandlers = {
+  [imgUploadPending]: imgUploadPendingHandler,
+  [imgUploadFulfill]: imgUploadFulfillHandler,
+  [imageDelete]: imageDeleteHandler,
+  [imageSwitch]: imageSwitchHandler,
+  [combineActions(imgUploadReject, imgUploadCancel)](state, action) {
+    return dotProp.set(state, 'uploading', false);
+  }
+};
+
+const historyAddHandler = (state, action) => {
+  let newHistoryId;
+  if (!state.histories) {
+    newHistoryId = 1;
+    state = dotProp.set(state, 'histories', [
+      { id: newHistoryId, date: moment().format('YYYY-MM-DD'), images: [] }
+    ]);
+  } else {
+    const histories = state.histories;
+    let lastId = 0;
+
+    histories.forEach(history => {
+      if (parseInt(history.id, 10) > lastId) {
+        lastId = history.id;
+      }
+    });
+    newHistoryId = lastId + 1;
+
+    state = dotProp.set(state, 'historyId', newHistoryId);
+    state = dotProp.set(state, 'histories', [
+      ...histories,
+      {
+        id: newHistoryId,
+        date: moment().format('YYYY-MM-DD'),
+        images: []
+      }
+    ]);
+  }
+  state = dotProp.set(state, 'historyId', newHistoryId);
+  return state;
+};
+
+const historyEditHandler = (state, action) => {
+  const histories = state.histories;
+  const historyId = parseInt(action.payload, 10);
+
+  const index = _.findIndex(histories, ['id', historyId]);
+  const history = histories[index];
+
+  const hasDate = !!_.get(history, 'date');
+  const date = hasDate ? _.get(history, 'date') : moment().format('YYYY/MM/DD');
+
+  state = dotProp.set(state, `histories.${index}.date`, date);
+  return dotProp.set(state, `historyId`, historyId);
+};
+
+const historyRemarkChangeHandler = (state, action) => {
+  const { remark, historyId } = action.payload;
+  const histories = state.histories;
+
+  const index = _.findIndex(histories, ['id', historyId]);
+
+  return dotProp.set(state, `histories.${index}.remark`, remark);
+};
+
+const historyDateChangeHandler = (state, action) => {
+  const { date, historyId } = action.payload;
+  const histories = state.histories;
+
+  const index = _.findIndex(histories, ['id', historyId]);
+
+  return dotProp.set(state, `histories.${index}.date`, date);
+};
+
+const historyUpdatePendingHandler = (state, action) => {
+  return dotProp.set(state, 'updating', true);
+};
+
+const historyUpdateFulfillHandler = (state, action) => ({
+  ...state,
+  updating: false,
+  updated: true
+});
+
+const historyUpdateRejectHandler = (state, action) => ({
+  ...state,
+  error: action.payload,
+  fetching: false
+});
+
+const historyHandlers = {
+  [historyAdd]: historyAddHandler,
+  [historyEdit]: historyEditHandler,
+  [historyRemarkChange]: historyRemarkChangeHandler,
+  [historyDateChange]: historyDateChangeHandler,
+  [historyUpdatePending]: historyUpdatePendingHandler,
+  [historyUpdateFulfill]: historyUpdateFulfillHandler,
+  [historyUpdateReject]: historyUpdateRejectHandler
+};
+
+const recipeFetchHandlers = {
+  [recipeFetchPending]: recipeFetchPendingHandler,
+  [recipeFetchFulfillNewrecipe]: recipeFetchFulfillNewrecipeHandler,
+  [recipeFetchFulfill]: recipeFetchFulfillHandler,
+  [recipeFetctReject]: recipeFetctRejectHandler
+};
+
+const recipeUpdateHandlers = {
+  [recipeUpdatePending]: recipeUpdatePendingHandler,
+  [recipeUpdateFulfill]: recipeUpdateFulfillHandler,
+  [recipeUpdateReject]: recipeUpdateRejectHandler
+};
+
+const reducer = handleActions(
+  {
+    [nameChange]: nameChangeHandler,
+    ...recipeFetchHandlers,
+    ...recipeUpdateHandlers,
+    [reset]: resetHandler,
+    ...stepHandlers,
+    ...ingredientChangeHandlers,
+    [imgUploaderAdd]: imgUploaderAddHandler,
+    ...imageHandlers,
+    ...historyHandlers
   },
   defaultState
 );
