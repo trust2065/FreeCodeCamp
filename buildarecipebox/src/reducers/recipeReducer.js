@@ -352,6 +352,17 @@ const ingredientChangeHandlers = {
   [ingredientDelete]: ingredientDeleteHandler
 };
 
+const findMaxInArray = (array, prop, defaultValue) => {
+  let max = defaultValue;
+  array.forEach(element => {
+    if (parseInt(element[prop], 10) > parseInt(max, 10)) {
+      max = element[prop];
+    }
+  });
+  return max + 1;
+  // parseInt(images[images.length - 1].no + 1, 10);
+};
+
 const imgUploaderAddHandler = (state, action) => {
   const { type } = action.payload;
   switch (type) {
@@ -363,9 +374,7 @@ const imgUploaderAddHandler = (state, action) => {
       const images = _.get(history, 'images', []);
 
       const newNo =
-        !images || images.length === 0
-          ? 1
-          : parseInt(images[images.length - 1].no + 1, 10);
+        !images || images.length === 0 ? 1 : findMaxInArray(images, 'no', 1);
 
       return dotProp.set(state, `histories.${index}.images`, [
         ...images,
