@@ -29,8 +29,7 @@ const HistoryCreate = connect(store => {
     fetching: store.recipe.fetching,
     fetched: store.recipe.fetched,
     updating: store.recipe.updating,
-    updated: store.recipe.updated,
-    uploading: store.recipe.uploading
+    updated: store.recipe.updated
   };
 })(
   class HistoryCreate extends Component {
@@ -96,13 +95,24 @@ const HistoryCreate = connect(store => {
         historyId,
         fetching,
         updating,
-        updated,
-        uploading
+        updated
       } = this.props;
 
       let styleBtnUpdateText;
       let toggleDisable = false;
       let btnUpdateText;
+
+      let history;
+      let index;
+      if (historyId !== 0) {
+        index = _.findIndex(histories, ['id', historyId]);
+        if (index !== -1) {
+          history = histories[index];
+        }
+      }
+
+      const uploadingImageNos = _.get(history, 'uploadingImageNos', {});
+      const uploading = !_.isEqual(uploadingImageNos, {});
 
       if (fetching || updating || uploading) {
         if (fetching) {
@@ -126,15 +136,6 @@ const HistoryCreate = connect(store => {
         styleBtnUpdateText = 'btn-primary';
       }
 
-      let history;
-      let index;
-      if (historyId !== 0) {
-        index = _.findIndex(histories, ['id', historyId]);
-        if (index !== -1) {
-          history = histories[index];
-        }
-      }
-
       const hasDate = !!_.get(history, 'date');
       const date = hasDate ? moment(_.get(history, 'date')) : moment();
       const remark = _.get(history, 'remark', '');
@@ -156,6 +157,7 @@ const HistoryCreate = connect(store => {
                 no={no}
                 url={url}
                 disabled={toggleDisable}
+                // uploading={uploadingImageNos[no]}
                 uploading={uploading}
                 onUpload={e => this.handleImageUpload(e, no)}
                 onDelete={this.handleImageDelete}

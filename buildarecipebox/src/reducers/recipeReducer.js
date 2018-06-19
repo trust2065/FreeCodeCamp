@@ -45,16 +45,20 @@ const {
       type,
       no,
       historyId
+    }),
+    IMG_UPLOAD_PENDING: (type, no, historyId) => ({
+      type,
+      no,
+      historyId
     })
   },
-  'IMG_UPLOAD_PENDING',
   'IMG_UPLOAD_REJECT',
   'IMG_UPLOAD_CANCEL'
 );
 
 export function imgUpload(e, type = 'recipe', no = 0, historyId) {
   return dispatch => {
-    dispatch(imgUploadPending());
+    dispatch(imgUploadPending(type, no, historyId));
     const files = e.target.files;
     const dataMaxSize = e.target.attributes.getNamedItem('data-max-size').value;
 
@@ -376,8 +380,21 @@ const imgUploaderAddHandler = (state, action) => {
   }
 };
 
-const imgUploadPendingHandler = (state, action) =>
-  dotProp.set(state, 'uploading', true);
+const imgUploadPendingHandler = (state, action) => {
+  const type = action.payload.type;
+
+  if (type === 'History') {
+    const no = action.payload.no;
+    const historyId = action.payload.historyId;
+    const histories = state.histories;
+    const historyIndex = _.findIndex(histories, ['id', historyId]);
+
+    state = dotProp.set(state, `histories.${historyIndex}.uploadingImageNos`, {
+      [no]: true
+    });
+  }
+  return state;
+};
 
 const imgUploadFulfillHandler = (state, action) => {
   const { type, no, url } = action.payload;
@@ -396,7 +413,12 @@ const imgUploadFulfillHandler = (state, action) => {
         `histories.${historyIndex}.images.${imageIndex}.url`,
         url
       );
-      return dotProp.set(state, `uploading`, false);
+      state = dotProp.delete(
+        state,
+        `histories.${historyIndex}.uploadingImageNos.${no}`
+      );
+
+      return state;
     }
   }
   return {
@@ -473,7 +495,12 @@ const historyAddHandler = (state, action) => {
   if (!state.histories) {
     newHistoryId = 1;
     state = dotProp.set(state, 'histories', [
-      { id: newHistoryId, date: moment().format('YYYY-MM-DD'), images: [] }
+      {
+        id: newHistoryId,
+        date: moment().format('YYYY-MM-DD'),
+        images: [],
+        uploadingImageIds: {}
+      }
     ]);
   } else {
     const histories = state.histories;
@@ -492,7 +519,8 @@ const historyAddHandler = (state, action) => {
       {
         id: newHistoryId,
         date: moment().format('YYYY-MM-DD'),
-        images: []
+        images: [],
+        uploadingImageIds: {}
       }
     ]);
   }
