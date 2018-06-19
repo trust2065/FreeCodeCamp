@@ -1,9 +1,8 @@
 import _ from 'lodash';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { connect } from 'react-redux';
+import { Ingredient, Step } from './components';
 import React, { Component } from 'react';
-import Ingredient from './Ingredient.js';
-import Step from './Step.js';
 import { Link } from 'react-router-dom';
 import {
   imgUpload,
@@ -17,7 +16,7 @@ import {
   recipeFetch,
   recipeUpdate,
   reset
-} from '../reducers/recipeReducer';
+} from '../../reducers/recipeReducer';
 
 // let recipeId;
 const Recipe = connect(store => {
@@ -101,31 +100,25 @@ const Recipe = connect(store => {
 
       let ingredientsRow = [];
       let stepsRow = [];
-      if (ingredients && ingredients.length > 0) {
-        ingredients.forEach((element, i) => {
-          ingredientsRow.push(
-            <Ingredient
-              key={`ingredient_${i}`}
-              onChange={e => this.handleIngredientChange(e, i)}
-              onDelete={() => this.handleIngredientDelete(i)}
-              name={element.name}
-            />
-          );
-        });
-      }
-      if (steps && steps.length > 0) {
-        steps.forEach((element, i) => {
-          stepsRow.push(
-            <Step
-              key={`step_${i}`}
-              desp={element.desp}
-              onChange={e => this.handleStepChange(e, i)}
-              onDelete={() => this.handleStepDelete(i)}
-              step={element.step}
-            />
-          );
-        });
-      }
+
+      ingredientsRow = ingredients.map((ingredient, i) => (
+        <Ingredient
+          key={`ingredient_${i}`}
+          onChange={e => this.handleIngredientChange(e, i)}
+          onDelete={() => this.handleIngredientDelete(i)}
+          name={ingredient.name}
+        />
+      ));
+
+      stepsRow = steps.map((step, i) => (
+        <Step
+          key={`step_${i}`}
+          desp={step.desp}
+          step={i + 1}
+          onChange={e => this.handleStepChange(e, i)}
+          onDelete={() => this.handleStepDelete(i)}
+        />
+      ));
 
       let styleBtnUpdateText;
       let toggleDisable = false;
@@ -209,9 +202,16 @@ const Recipe = connect(store => {
               </div>
             </div>
             <div className="col-sm">
-              <Link to={`/recipe/${recipeId}/history/create`}>
-                <button className="btn btn-block mb-4">Add History</button>
-              </Link>
+              {recipeId && (
+                <div>
+                  <Link to={`/recipe/${recipeId}/history`}>
+                    <button className="btn btn-block mb-4">View History</button>
+                  </Link>
+                  <Link to={`/recipe/${recipeId}/history/create`}>
+                    <button className="btn btn-block mb-4">Add History</button>
+                  </Link>
+                </div>
+              )}
               <form id="imgur">
                 {uploading ? (
                   <label>Uploading</label>

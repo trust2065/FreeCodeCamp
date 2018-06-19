@@ -2,7 +2,7 @@
 // import firebase from "firebase";
 
 // This import loads the firebase namespace along with all its type information.
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/app';
 
 // These imports load individual services into the firebase namespace.
 import 'firebase/auth';
@@ -19,6 +19,6 @@ let config = {
 
 firebase.initializeApp(config);
 // Get a reference to the database service
-let database = firebase.database(); //this doesnt have to be database only
+let Firebase = firebase.database(); //this doesnt have to be database only
 
-export default database;
+export default Firebase;

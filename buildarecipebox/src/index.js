@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './css/Recipe.css';
-// import App from "./components/App";
-import Recipe from './components/Recipe';
-import Home from './components/Home';
-import HistoryCreate from './components/HistoryCreate';
-import Header from './components/Header';
+import './modules/core/general.css';
+import { Header } from './modules/core';
+import Home from './modules/home';
+import Recipe from './modules/recipe';
+import History from './modules/history';
+import HistoryCreate from './modules/historyDetail';
 import registerServiceWorker from './registerServiceWorker';
 import {
   BrowserRouter as Router,
@@ -29,9 +29,10 @@ ReactDOM.render(
           <Route exact path="/recipe/:id" component={Recipe} />
           <Route
             exact
-            path="/recipe/:id/history/create"
+            path="/recipe/:id/history/:historyId"
             component={HistoryCreate}
           />
+          <Route exact path="/recipe/:id/history" component={History} />
           <Route>
             <Redirect to="/" />
           </Route>
