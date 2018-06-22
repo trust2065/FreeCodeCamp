@@ -21,7 +21,7 @@ const History = connect(store => {
       };
     }
     componentDidMount = () => {
-      const recipeId = this.props.match.params.id;
+      const recipeId = _.get(this.props, 'match.params.id', '');
       this.props.dispatch(recipeFetch(recipeId));
     };
     onShowRemarkChange = e => {
@@ -29,8 +29,8 @@ const History = connect(store => {
       this.setState({ ...this.state, showRemark: showRemark });
     };
     render() {
-      const { histories } = this.props;
-      const recipeId = _.get(this.props, 'recipeId', '');
+      const histories = _.get(this.props, 'histories', []);
+      const recipeId = _.get(this.props, 'recipeId', 0);
       const name = _.get(this.props, 'name', '');
       const showRemark = _.get(this.state, 'showRemark', true);
 

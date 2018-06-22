@@ -15,30 +15,34 @@ import {
   imgUpload,
   imageDelete,
   imageSwitch
-} from '../../reducers/recipeReducer';
+} from './reducer';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
 import '../core/react-datepicker.css';
 
 const HistoryCreate = connect(store => {
+  const { name, histories, historyId } = store.historyDetail.data;
+  const { fetching, fetched, updating, updated } = store.historyDetail.meta;
   return {
-    name: store.recipe.name,
-    histories: store.recipe.histories,
-    historyId: store.recipe.historyId,
-    recipeId: store.recipe.recipeId,
-    fetching: store.recipe.fetching,
-    fetched: store.recipe.fetched,
-    updating: store.recipe.updating,
-    updated: store.recipe.updated
+    name,
+    historyId,
+    histories,
+    fetching,
+    fetched,
+    updating,
+    updated
   };
 })(
   class HistoryCreate extends Component {
+    constructor(props) {
+      super(props);
+      this.recipeId = _.get(this.props, 'match.params.id', 0);
+    }
     componentDidMount = () => {
-      const recipeId = this.props.match.params.id;
-      const historyId = this.props.match.params.historyId;
+      const recipeId = this.recipeId;
+      const historyId = _.get(this.props, 'match.params.historyId', 0);
 
       this.props.dispatch(recipeFetch(recipeId)).then(() => {
-        console.log('recipeFetch complete');
         if (historyId === 'create') {
           this.props.dispatch(historyAdd());
         } else {
@@ -48,55 +52,52 @@ const HistoryCreate = connect(store => {
     };
 
     handleDateChange = moment => {
-      const historyId = this.props.historyId;
+      const { historyId } = this.props;
       const date = moment.format('YYYY/MM/DD');
       this.props.dispatch(historyDateChange(date, historyId));
     };
 
     handleRemarkChange = e => {
       const value = e.target.value;
-      const historyId = this.props.historyId;
+      const { historyId } = this.props;
       this.props.dispatch(historyRemarkChange(value, historyId));
     };
 
     handleHistoryUpdate = () => {
-      const { recipeId, histories } = this.props;
+      const recipeId = this.recipeId;
+      const { histories } = this.props;
       this.props.dispatch(historyUpdate(recipeId, histories));
     };
 
     handleImageUploaderAdd = () => {
       const { historyId } = this.props;
-      this.props.dispatch(imgUploaderAdd('History', historyId));
+      this.props.dispatch(imgUploaderAdd(historyId));
     };
 
     handleImageUpload = (e, no) => {
       console.log('onImageUpload');
       const { historyId } = this.props;
-      this.props.dispatch(imgUpload(e, 'History', no, historyId));
+      this.props.dispatch(imgUpload(e, no, historyId));
     };
 
     handleImageDelete = (e, no) => {
       e.preventDefault();
       const { historyId } = this.props;
-      this.props.dispatch(imageDelete('History', no, historyId));
+      this.props.dispatch(imageDelete(no, historyId));
     };
 
     handleSwitch = (sourceNo, targetNo) => {
       const { historyId } = this.props;
-      this.props.dispatch(
-        imageSwitch('History', sourceNo, targetNo, historyId)
-      );
+      this.props.dispatch(imageSwitch(sourceNo, targetNo, historyId));
     };
 
     render() {
-      const {
-        name,
-        histories,
-        historyId,
-        fetching,
-        updating,
-        updated
-      } = this.props;
+      const name = _.get(this.props, 'name', '');
+      const histories = _.get(this.props, 'histories', []);
+      const historyId = _.get(this.props, 'historyId', 0);
+      const fetching = _.get(this.props, 'fetching', false);
+      const updating = _.get(this.props, 'updating', false);
+      const updated = _.get(this.props, 'updated', false);
 
       let styleBtnUpdateText;
       let toggleDisable = false;
