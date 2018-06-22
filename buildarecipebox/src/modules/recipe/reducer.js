@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import axios from 'axios';
 import {
   createAction,
@@ -10,21 +9,11 @@ import { combineReducers } from 'redux';
 import database from '../core/Firebase';
 import dotProp from 'dot-prop-immutable';
 import FirebaseActions from '../core/FirebaseAction';
-import moment from 'moment';
 import reduceReducers from 'reduce-reducers';
 
-export const imgUploaderAdd = createAction(
-  'IMGUPLOADER_ADD',
-  (type, historyId) => ({ type, historyId })
-);
-export const imageDelete = createAction(
-  'IMG_DELETE',
-  (type, no, historyId) => ({
-    type,
-    no,
-    historyId
-  })
-);
+//=================
+// Action Creators
+//=================
 
 const {
   imgUploadFulfill,
@@ -188,15 +177,17 @@ export function recipeUpdate(recipeId, name, ingredients, steps, imgURL = '') {
 
 export const reset = createAction('RESET');
 
+//=================
+// Default State
+//=================
+
 const defaultState = {
   data: {
     recipeId: 0,
     name: '',
     ingredients: [],
     steps: [],
-    imgURL: '',
-    histories: [],
-    historyId: 0
+    imgURL: ''
   },
   meta: {
     fetching: false,
@@ -208,118 +199,58 @@ const defaultState = {
   }
 };
 
-const nameChangeHandler = (state, action) =>
-  dotProp.set(state, 'name', action.payload);
-
-const stepChangeHandler = (state, action) => {
-  const changedText = action.payload.changedText;
-  const order = action.payload.order;
-  return dotProp.set(state, `steps.${order}.desp`, changedText);
-};
-
-const stepAddHandler = (state, action) => {
-  return dotProp.set(state, 'steps', [...state.steps, { desp: '' }]);
-};
-
-const stepDeleteHandler = (state, action) => {
-  const targetIndex = action.payload;
-  return dotProp.delete(state, `steps.${targetIndex}`);
-};
+//=================
+// Handler
+//=================
 
 const stepHandlers = {
-  [stepChange]: stepChangeHandler,
-  [stepAdd]: stepAddHandler,
-  [stepDelete]: stepDeleteHandler
-};
-
-const ingredientChangeHandler = (state, action) => {
-  const changedText = action.payload.changedText;
-  const order = action.payload.order;
-  return dotProp.set(state, `ingredients.${order}.name`, changedText);
-};
-
-const ingredientAddHandler = (state, action) => {
-  return dotProp.set(state, 'ingredients', [
-    ...state.ingredients,
-    { name: '' }
-  ]);
-};
-
-const ingredientDeleteHandler = (state, action) => {
-  const targetIndex = action.payload;
-  return dotProp.delete(state, `ingredients.${targetIndex}`);
+  [stepChange]: (state, action) => {
+    const changedText = action.payload.changedText;
+    const order = action.payload.order;
+    return dotProp.set(state, `steps.${order}.desp`, changedText);
+  },
+  [stepAdd]: (state, action) => {
+    return dotProp.set(state, 'steps', [...state.steps, { desp: '' }]);
+  },
+  [stepDelete]: (state, action) => {
+    const targetIndex = action.payload;
+    return dotProp.delete(state, `steps.${targetIndex}`);
+  }
 };
 
 const ingredientChangeHandlers = {
-  [ingredientChange]: ingredientChangeHandler,
-  [ingredientAdd]: ingredientAddHandler,
-  [ingredientDelete]: ingredientDeleteHandler
-};
-
-const imgUploadPendingHandler = (state, action) => {
-  const type = action.payload.type;
-
-  if (type === 'History') {
-    const no = action.payload.no;
-    const historyId = action.payload.historyId;
-    const histories = state.histories;
-    const historyIndex = _.findIndex(histories, ['id', historyId]);
-
-    state = dotProp.set(state, `histories.${historyIndex}.uploadingImageNos`, {
-      [no]: true
-    });
-  }
-  return state;
-};
-
-const imgUploadFulfillHandler = (state, action) => {
-  const { type, no, url } = action.payload;
-
-  if (type === 'History') {
-    if (no) {
-      const { historyId } = action.payload;
-      const histories = state.histories;
-      const historyIndex = _.findIndex(histories, ['id', historyId]);
-      const history = histories[historyIndex];
-      const images = history.images;
-      const imageIndex = _.findIndex(images, ['no', no]);
-
-      state = dotProp.set(
-        state,
-        `histories.${historyIndex}.images.${imageIndex}.url`,
-        url
-      );
-      state = dotProp.delete(
-        state,
-        `histories.${historyIndex}.uploadingImageNos.${no}`
-      );
-
-      return state;
-    }
-  }
-  return {
-    ...state,
-    uploading: false,
-    imgURL: url
-  };
-};
-
-const imageHandlers = {
-  [imgUploadPending]: imgUploadPendingHandler,
-  [imgUploadFulfill]: imgUploadFulfillHandler,
-  [combineActions(imgUploadReject, imgUploadCancel)](state, action) {
-    return dotProp.set(state, 'uploading', false);
+  [ingredientChange]: (state, action) => {
+    const changedText = action.payload.changedText;
+    const order = action.payload.order;
+    return dotProp.set(state, `ingredients.${order}.name`, changedText);
+  },
+  [ingredientAdd]: (state, action) => {
+    return dotProp.set(state, 'ingredients', [
+      ...state.ingredients,
+      { name: '' }
+    ]);
+  },
+  [ingredientDelete]: (state, action) => {
+    const targetIndex = action.payload;
+    return dotProp.delete(state, `ingredients.${targetIndex}`);
   }
 };
+
+//=========
+// Reducer
+//=========
 
 const dataReducer = handleActions(
   {
-    [nameChange]: nameChangeHandler,
+    [nameChange]: (state, action) => dotProp.set(state, 'name', action.payload),
     ...stepHandlers,
     ...ingredientChangeHandlers,
     [recipeFetchFulfillNewrecipe]: (state, action) => {
       const recipeId = action.payload;
-      return dotProp.set(defaultState, 'recipeId', recipeId);
+      return {
+        ...defaultState.data,
+        recipeId: recipeId
+      };
     },
     [recipeFetchFulfill]: (state, action) => {
       const recipe = action.payload.recipe;
@@ -334,7 +265,10 @@ const dataReducer = handleActions(
         histories: recipe.histories
       };
     },
-    ...imageHandlers
+    [imgUploadFulfill]: (state, action) => {
+      const { url: imgURL } = action.payload;
+      return dotProp.set(state, 'imgURL', imgURL);
+    }
   },
   defaultState.data
 );
@@ -360,7 +294,10 @@ const metaReducer = handleActions(
     [reset]: (state, action) => {
       return dotProp.set(state, 'updated', false);
     },
-    [recipeFetchFulfill]: (state, action) => {
+    [combineActions(recipeFetchFulfillNewrecipe, recipeFetchFulfill)]: (
+      state,
+      action
+    ) => {
       return {
         ...state,
         fetching: false,
@@ -374,6 +311,15 @@ const metaReducer = handleActions(
         fetching: false,
         error: error
       };
+    },
+    [imgUploadPending]: (state, action) => {
+      return dotProp.set(state, 'uploading', true);
+    },
+    [imgUploadFulfill]: (state, action) => {
+      return dotProp.set(state, 'uploading', false);
+    },
+    [combineActions(imgUploadReject, imgUploadCancel)](state, action) {
+      return dotProp.set(state, 'uploading', false);
     }
   },
   defaultState.meta
