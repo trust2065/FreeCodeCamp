@@ -16,21 +16,23 @@ import {
   recipeFetch,
   recipeUpdate,
   reset
-} from '../../reducers/recipeReducer';
+} from './reducer';
 
 // let recipeId;
 const Recipe = connect(store => {
+  const { recipeId, steps, ingredients, name, imgURL } = store.recipe.data;
+  const { fetching, fetched, updating, updated, uploading } = store.recipe.meta;
   return {
-    recipeId: store.recipe.recipeId,
-    steps: store.recipe.steps,
-    ingredients: store.recipe.ingredients,
-    name: store.recipe.name,
-    fetching: store.recipe.fetching,
-    fetched: store.recipe.fetched,
-    updating: store.recipe.updating,
-    updated: store.recipe.updated,
-    uploading: store.recipe.uploading,
-    imgURL: store.recipe.imgURL
+    recipeId,
+    steps,
+    ingredients,
+    name,
+    imgURL,
+    fetching,
+    fetched,
+    updating,
+    updated,
+    uploading
   };
 })(
   class Recipe extends Component {
