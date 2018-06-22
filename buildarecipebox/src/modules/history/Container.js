@@ -1,21 +1,22 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
 import { HistoryBox } from '../../components';
-import { recipeFetch } from '../../reducers/recipeReducer';
+import { recipeFetch } from './reducer';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-const History = connect(store => ({
-  histories: store.recipe.histories,
-  recipeId: store.recipe.recipeId,
-  name: store.recipe.name
-}))(
+const History = connect(store => {
+  const { histories, recipeId, name } = store.history.data;
+  return {
+    histories,
+    recipeId,
+    name
+  };
+})(
   class History extends Component {
     constructor(props) {
       super(props);
       this.state = {
-        history: { date: '', remark: '', images: [] },
-        historyId: 0,
         showRemark: true
       };
     }

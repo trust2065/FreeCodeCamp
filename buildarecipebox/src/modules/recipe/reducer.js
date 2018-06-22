@@ -95,7 +95,7 @@ export const { stepAdd, stepChange, stepDelete } = createActions(
   'STEP_DELETE'
 );
 
-export const {
+const {
   recipeFetchPending,
   recipeFetchFulfill,
   recipeFetchFulfillNewrecipe,
