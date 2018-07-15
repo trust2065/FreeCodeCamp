@@ -4,15 +4,7 @@ import IconTrash from 'react-icons/lib/fa/trash';
 import { DraggableImage } from './';
 class ImageUploader extends Component {
   render() {
-    const {
-      no,
-      onUpload,
-      onDelete,
-      onSwitch,
-      url,
-      disabled,
-      uploading
-    } = this.props;
+    const { no, onUpload, onDelete, onSwitch, url, uploading } = this.props;
 
     return (
       <div>
@@ -33,7 +25,6 @@ class ImageUploader extends Component {
             </div>
           )}
           <input
-            disabled={disabled}
             type="file"
             id={`image_${no}`}
             style={{ display: 'none' }}

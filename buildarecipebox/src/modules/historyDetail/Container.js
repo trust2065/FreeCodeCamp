@@ -22,7 +22,13 @@ import '../core/react-datepicker.css';
 
 const HistoryCreate = connect(store => {
   const { name, histories, historyId } = store.historyDetail.data;
-  const { fetching, fetched, updating, updated } = store.historyDetail.meta;
+  const {
+    fetching,
+    fetched,
+    updating,
+    updated,
+    uploadingImageNos
+  } = store.historyDetail.meta;
   return {
     name,
     historyId,
@@ -30,7 +36,8 @@ const HistoryCreate = connect(store => {
     fetching,
     fetched,
     updating,
-    updated
+    updated,
+    uploadingImageNos
   };
 })(
   class HistoryCreate extends Component {
@@ -99,6 +106,9 @@ const HistoryCreate = connect(store => {
       const updating = _.get(this.props, 'updating', false);
       const updated = _.get(this.props, 'updated', false);
 
+      const uploadingImageNos = _.get(this.props, 'uploadingImageNos', {});
+      const hasImageUploading = !_.isEqual(uploadingImageNos, {});
+
       let styleBtnUpdateText;
       let toggleDisable = false;
       let btnUpdateText;
@@ -112,15 +122,12 @@ const HistoryCreate = connect(store => {
         }
       }
 
-      const uploadingImageNos = _.get(history, 'uploadingImageNos', {});
-      const uploading = !_.isEqual(uploadingImageNos, {});
-
-      if (fetching || updating || uploading) {
+      if (fetching || updating || hasImageUploading) {
         if (fetching) {
           btnUpdateText = 'fetching';
         } else if (updating) {
           btnUpdateText = 'updating';
-        } else if (uploading) {
+        } else if (hasImageUploading) {
           btnUpdateText = 'image uploading';
         }
         toggleDisable = true;
@@ -157,9 +164,7 @@ const HistoryCreate = connect(store => {
               <ImageUploader
                 no={no}
                 url={url}
-                disabled={toggleDisable}
-                // uploading={uploadingImageNos[no]}
-                uploading={uploading}
+                uploading={uploadingImageNos[no]}
                 onUpload={e => this.handleImageUpload(e, no)}
                 onDelete={this.handleImageDelete}
                 onSwitch={this.handleSwitch}

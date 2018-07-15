@@ -59,27 +59,31 @@ export const imageSwitch = createAction(
 
 const imgUploadFulfill = createAction(
   `${PREFIX}/imgUploadFulfill`,
-  (url, no, historyId) => ({
+  (url, imgNo, historyId) => ({
     url,
-    no,
+    imgNo,
     historyId
   })
 );
 
 const imgUploadPending = createAction(
   `${PREFIX}/IMG_UPLOAD_PENDING`,
-  (no, historyId) => ({
-    no,
-    historyId
+  imgNo => ({
+    imgNo
   })
 );
 
-const imgUploadReject = createAction(`${PREFIX}/IMG_UPLOAD_REJECT`);
-const imgUploadCancel = createAction(`${PREFIX}/IMG_UPLOAD_CANCEL`);
+const imgUploadReject = createAction(`${PREFIX}/IMG_UPLOAD_REJECT`, imgNo => ({
+  imgNo
+}));
 
-export function imgUpload(e, no = 0, historyId) {
+const imgUploadCancel = createAction(`${PREFIX}/IMG_UPLOAD_CANCEL`, imgNo => ({
+  imgNo
+}));
+
+export function imgUpload(e, imgNo = 0, historyId) {
   return dispatch => {
-    dispatch(imgUploadPending(no, historyId));
+    dispatch(imgUploadPending(imgNo));
     const files = e.target.files;
     const dataMaxSize = e.target.attributes.getNamedItem('data-max-size').value;
 
@@ -101,13 +105,13 @@ export function imgUpload(e, no = 0, historyId) {
         })
         .then(response => {
           const imgURL = response.data.data.link;
-          dispatch(imgUploadFulfill(imgURL, no, historyId));
+          dispatch(imgUploadFulfill(imgURL, imgNo, historyId));
         })
         .catch(error => {
-          dispatch(imgUploadReject());
+          dispatch(imgUploadReject(imgNo));
         });
     } else {
-      dispatch(imgUploadCancel());
+      dispatch(imgUploadCancel(imgNo));
     }
   };
 }
@@ -120,7 +124,7 @@ const recipeFetchFulfill = createAction(
     recipeId
   })
 );
-const recipeFetctReject = createAction(`${PREFIX}/RECIPE_FETCH_REJECT`);
+const recipeFetchReject = createAction(`${PREFIX}/RECIPE_FETCH_REJECT`);
 
 export function recipeFetch(recipeId) {
   return dispatch => {
@@ -133,11 +137,11 @@ export function recipeFetch(recipeId) {
         if (recipe) {
           dispatch(recipeFetchFulfill(recipe, recipeId));
         } else {
-          dispatch(recipeFetctReject('recipe not exist'));
+          dispatch(recipeFetchReject('recipe not exist'));
         }
       },
       function(err) {
-        dispatch(recipeFetctReject(err));
+        dispatch(recipeFetchReject(err));
       }
     );
   };
@@ -354,14 +358,14 @@ const dataReducer = handleActions(
     [historyRemarkChange]: historyRemarkChangeHandler,
     [historyDateChange]: historyDateChangeHandler,
     [imgUploadFulfill]: (state, { payload }) => {
-      const { no, url } = payload;
-      if (no) {
+      const { imgNo, url } = payload;
+      if (imgNo) {
         const { historyId } = payload;
         const histories = state.histories;
         const historyIndex = _.findIndex(histories, ['id', historyId]);
         const history = histories[historyIndex];
         const images = history.images;
-        const imageIndex = _.findIndex(images, ['no', no]);
+        const imageIndex = _.findIndex(images, ['no', imgNo]);
 
         state = dotProp.set(
           state,
@@ -388,7 +392,7 @@ const metaReducer = handleActions(
         fetched: true
       };
     },
-    [recipeFetctReject]: (state, action) => {
+    [recipeFetchReject]: (state, action) => {
       const error = action.payload;
       return {
         ...state,
@@ -400,13 +404,17 @@ const metaReducer = handleActions(
       return dotProp.set(state, 'updated', false);
     },
     [imgUploadFulfill]: (state, { payload }) => {
-      const { no } = payload;
-      if (no) {
-        state = dotProp.delete(state, `uploadingImageNos.${no}`);
+      const { imgNo } = payload;
+      if (imgNo) {
+        state = dotProp.delete(state, `uploadingImageNos.${imgNo}`);
         return state;
       }
     },
-    [combineActions(imgUploadReject, imgUploadCancel)](state, action) {
+    [combineActions(imgUploadReject, imgUploadCancel)](state, { payload }) {
+      const { imgNo } = payload;
+      if (imgNo) {
+        state = dotProp.delete(state, `uploadingImageNos.${imgNo}`);
+      }
       return dotProp.set(state, 'uploading', false);
     },
     [historyUpdatePending]: (state, action) => {
