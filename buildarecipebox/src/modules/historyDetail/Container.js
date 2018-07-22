@@ -27,7 +27,7 @@ const HistoryCreate = connect(store => {
     fetched,
     updating,
     updated,
-    uploadingImageNos
+    uploadingImgIndexs
   } = store.historyDetail.meta;
   return {
     name,
@@ -37,7 +37,7 @@ const HistoryCreate = connect(store => {
     fetched,
     updating,
     updated,
-    uploadingImageNos
+    uploadingImgIndexs
   };
 })(
   class HistoryCreate extends Component {
@@ -81,21 +81,23 @@ const HistoryCreate = connect(store => {
       this.props.dispatch(imgUploaderAdd(historyId));
     };
 
-    handleImageUpload = (e, no) => {
+    handleImageUpload = (e, imgIndex) => {
       console.log('onImageUpload');
       const { historyId } = this.props;
-      this.props.dispatch(imgUpload(e, no, historyId));
+      this.props.dispatch(imgUpload(e, imgIndex, historyId));
     };
 
-    handleImageDelete = (e, no) => {
+    handleImageDelete = (e, imgIndex) => {
       e.preventDefault();
       const { historyId } = this.props;
-      this.props.dispatch(imageDelete(no, historyId));
+      this.props.dispatch(imageDelete(imgIndex, historyId));
     };
 
-    handleSwitch = (sourceNo, targetNo) => {
+    handleSwitch = (sourceImgIndex, targetImgIndex) => {
       const { historyId } = this.props;
-      this.props.dispatch(imageSwitch(sourceNo, targetNo, historyId));
+      this.props.dispatch(
+        imageSwitch(sourceImgIndex, targetImgIndex, historyId)
+      );
     };
 
     render() {
@@ -106,8 +108,8 @@ const HistoryCreate = connect(store => {
       const updating = _.get(this.props, 'updating', false);
       const updated = _.get(this.props, 'updated', false);
 
-      const uploadingImageNos = _.get(this.props, 'uploadingImageNos', {});
-      const hasImageUploading = !_.isEqual(uploadingImageNos, {});
+      const uploadingImgIndexs = _.get(this.props, 'uploadingImgIndexs', {});
+      const hasImageUploading = !_.isEqual(uploadingImgIndexs, {});
 
       let styleBtnUpdateText;
       let toggleDisable = false;
@@ -155,6 +157,7 @@ const HistoryCreate = connect(store => {
         images.length > 0 &&
         images.forEach(image => {
           const no = image.no;
+          const imgIndex = _.findIndex(images, ['no', no]);
           const url = image.url;
           imageUploaders.push(
             <div
@@ -162,10 +165,10 @@ const HistoryCreate = connect(store => {
               className="col-sm-4"
               style={{ minHeight: '15vw' }}>
               <ImageUploader
-                no={no}
+                imgIndex={imgIndex}
                 url={url}
-                uploading={uploadingImageNos[no]}
-                onUpload={e => this.handleImageUpload(e, no)}
+                uploading={uploadingImgIndexs[imgIndex]}
+                onUpload={e => this.handleImageUpload(e, imgIndex)}
                 onDelete={this.handleImageDelete}
                 onSwitch={this.handleSwitch}
               />

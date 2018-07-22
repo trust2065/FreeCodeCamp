@@ -9,7 +9,7 @@ const ItemTypes = {
 const sourceSpec = {
   beginDrag(props) {
     return {
-      no: props.no
+      imgIndex: props.imgIndex
     };
   }
 };
@@ -23,9 +23,11 @@ function collectSource(connect, monitor) {
 
 const targetSpec = {
   drop(props, monitor) {
-    const sourceNo = monitor.getItem() ? monitor.getItem().no : null;
-    const targetNo = props.no;
-    props.onSwitch(sourceNo, targetNo);
+    const sourceImgIndex = monitor.getItem()
+      ? monitor.getItem().imgIndex
+      : null;
+    const targetImgIndex = props.imgIndex;
+    props.onSwitch(sourceImgIndex, targetImgIndex);
   }
 };
 

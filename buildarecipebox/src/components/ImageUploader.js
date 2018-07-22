@@ -4,7 +4,15 @@ import IconTrash from 'react-icons/lib/fa/trash';
 import { DraggableImage } from './';
 class ImageUploader extends Component {
   render() {
-    const { no, onUpload, onDelete, onSwitch, url, uploading } = this.props;
+    const {
+      // no,
+      imgIndex,
+      onUpload,
+      onDelete,
+      onSwitch,
+      url,
+      uploading
+    } = this.props;
 
     return (
       <div>
@@ -14,19 +22,21 @@ class ImageUploader extends Component {
           ) : (
             <div className="d-flex justify-content-between mt-2 mb-2">
               <StyledLabel
-                htmlFor={`image_${no}`}
+                htmlFor={`image_${imgIndex}`}
                 type="button"
                 className="btn">
                 Select Image
               </StyledLabel>
-              <StyledButton className="btn ml-2" onClick={e => onDelete(e, no)}>
+              <StyledButton
+                className="btn ml-2"
+                onClick={e => onDelete(e, imgIndex)}>
                 <IconTrash />
               </StyledButton>
             </div>
           )}
           <input
             type="file"
-            id={`image_${no}`}
+            id={`image_${imgIndex}`}
             style={{ display: 'none' }}
             accept="image/*"
             data-max-size="5000"
@@ -35,7 +45,7 @@ class ImageUploader extends Component {
         </form>
         {!url ||
           (url !== '' && (
-            <DraggableImage no={no} onSwitch={onSwitch}>
+            <DraggableImage imgIndex={imgIndex} onSwitch={onSwitch}>
               <img className="img-fluid" src={url} alt="img" />
             </DraggableImage>
           ))}

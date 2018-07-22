@@ -29,7 +29,7 @@ const defaultState = {
     updated: false,
     uploading: false,
     error: '',
-    uploadingImageNos: {}
+    uploadingImgIndexs: {}
   }
 };
 
@@ -43,47 +43,53 @@ export const imgUploaderAdd = createAction(
 );
 export const imageDelete = createAction(
   `${PREFIX}/IMG_DELETE`,
-  (no, historyId) => ({
-    no,
+  (imgIndex, historyId) => ({
+    imgIndex,
     historyId
   })
 );
 export const imageSwitch = createAction(
   `${PREFIX}/IMG_SWITCH`,
-  (sourceNo, targetNo, historyId) => ({
-    sourceNo,
-    targetNo,
+  (sourceImgIndex, targetImgIndex, historyId) => ({
+    sourceImgIndex,
+    targetImgIndex,
     historyId
   })
 );
 
 const imgUploadFulfill = createAction(
   `${PREFIX}/imgUploadFulfill`,
-  (url, imgNo, historyId) => ({
+  (url, imgIndex, historyId) => ({
     url,
-    imgNo,
+    imgIndex,
     historyId
   })
 );
 
 const imgUploadPending = createAction(
   `${PREFIX}/IMG_UPLOAD_PENDING`,
-  imgNo => ({
-    imgNo
+  imgIndex => ({
+    imgIndex
   })
 );
 
-const imgUploadReject = createAction(`${PREFIX}/IMG_UPLOAD_REJECT`, imgNo => ({
-  imgNo
-}));
+const imgUploadReject = createAction(
+  `${PREFIX}/IMG_UPLOAD_REJECT`,
+  imgIndex => ({
+    imgIndex
+  })
+);
 
-const imgUploadCancel = createAction(`${PREFIX}/IMG_UPLOAD_CANCEL`, imgNo => ({
-  imgNo
-}));
+const imgUploadCancel = createAction(
+  `${PREFIX}/IMG_UPLOAD_CANCEL`,
+  imgIndex => ({
+    imgIndex
+  })
+);
 
-export function imgUpload(e, imgNo = 0, historyId) {
+export function imgUpload(e, imgIndex, historyId) {
   return dispatch => {
-    dispatch(imgUploadPending(imgNo));
+    dispatch(imgUploadPending(imgIndex));
     const files = e.target.files;
     const dataMaxSize = e.target.attributes.getNamedItem('data-max-size').value;
 
@@ -105,13 +111,13 @@ export function imgUpload(e, imgNo = 0, historyId) {
         })
         .then(response => {
           const imgURL = response.data.data.link;
-          dispatch(imgUploadFulfill(imgURL, imgNo, historyId));
+          dispatch(imgUploadFulfill(imgURL, imgIndex, historyId));
         })
         .catch(error => {
-          dispatch(imgUploadReject(imgNo));
+          dispatch(imgUploadReject(imgIndex));
         });
     } else {
-      dispatch(imgUploadCancel(imgNo));
+      dispatch(imgUploadCancel(imgIndex));
     }
   };
 }
@@ -222,54 +228,42 @@ const imgUploaderAddHandler = (state, action) => {
 };
 
 const imgUploadPendingHandler = (state, action) => {
-  const no = action.payload.no;
+  const { imgIndex } = action.payload;
 
-  state = dotProp.set(state, `meta.uploadingImageNos`, {
-    [no]: true
+  state = dotProp.merge(state, `meta.uploadingImgIndexs`, {
+    [imgIndex]: true
   });
+  console.log(JSON.stringify(state.meta.uploadingImgIndexs));
   return state;
 };
 const imageDeleteHandler = (state, action) => {
-  const no = action.payload.no;
+  const imgIndex = action.payload.imgIndex;
   const historyId = action.payload.historyId;
   const histories = state.histories;
   const historyIndex = _.findIndex(histories, ['id', historyId]);
 
-  const history = histories[historyIndex];
-  const images = history.images;
-
-  const imageIndex = _.findIndex(images, ['no', no]);
-
-  state = dotProp.delete(
-    state,
-    `histories.${historyIndex}.images.${imageIndex}`
-  );
+  state = dotProp.delete(state, `histories.${historyIndex}.images.${imgIndex}`);
   return state;
 };
 
-const imageSwitchHandler = (state, action) => {
-  const sourceNo = action.payload.sourceNo;
-  const targetNo = action.payload.targetNo;
-  const historyId = action.payload.historyId;
+const imageSwitchHandler = (state, { payload }) => {
+  const { sourceImgIndex, targetImgIndex, historyId } = payload;
   const histories = state.histories;
   const historyIndex = _.findIndex(histories, ['id', historyId]);
-
   const history = histories[historyIndex];
   const images = history.images;
 
-  const imageSourceIndex = _.findIndex(images, ['no', sourceNo]);
-  const imageTargetIndex = _.findIndex(images, ['no', targetNo]);
-  const imageSource = images[imageSourceIndex];
-  const imageTarget = images[imageTargetIndex];
+  const imageSource = images[sourceImgIndex];
+  const imageTarget = images[targetImgIndex];
 
   state = dotProp.set(
     state,
-    `histories.${historyIndex}.images.${imageSourceIndex}`,
+    `histories.${historyIndex}.images.${sourceImgIndex}`,
     imageTarget
   );
   state = dotProp.set(
     state,
-    `histories.${historyIndex}.images.${imageTargetIndex}`,
+    `histories.${historyIndex}.images.${targetImgIndex}`,
     imageSource
   );
 
@@ -358,18 +352,15 @@ const dataReducer = handleActions(
     [historyRemarkChange]: historyRemarkChangeHandler,
     [historyDateChange]: historyDateChangeHandler,
     [imgUploadFulfill]: (state, { payload }) => {
-      const { imgNo, url } = payload;
-      if (imgNo) {
+      const { imgIndex, url } = payload;
+      if (imgIndex >= 0) {
         const { historyId } = payload;
         const histories = state.histories;
         const historyIndex = _.findIndex(histories, ['id', historyId]);
-        const history = histories[historyIndex];
-        const images = history.images;
-        const imageIndex = _.findIndex(images, ['no', imgNo]);
 
         state = dotProp.set(
           state,
-          `histories.${historyIndex}.images.${imageIndex}.url`,
+          `histories.${historyIndex}.images.${imgIndex}.url`,
           url
         );
 
@@ -404,16 +395,17 @@ const metaReducer = handleActions(
       return dotProp.set(state, 'updated', false);
     },
     [imgUploadFulfill]: (state, { payload }) => {
-      const { imgNo } = payload;
-      if (imgNo) {
-        state = dotProp.delete(state, `uploadingImageNos.${imgNo}`);
+      const { imgIndex } = payload;
+      if (imgIndex >= 0) {
+        state = dotProp.delete(state, `uploadingImgIndexs.${imgIndex}`);
+        console.log(JSON.stringify(state.uploadingImgIndexs));
         return state;
       }
     },
     [combineActions(imgUploadReject, imgUploadCancel)](state, { payload }) {
-      const { imgNo } = payload;
-      if (imgNo) {
-        state = dotProp.delete(state, `uploadingImageNos.${imgNo}`);
+      const { imgIndex } = payload;
+      if (imgIndex) {
+        state = dotProp.delete(state, `uploadingImgIndexs.${imgIndex}`);
       }
       return dotProp.set(state, 'uploading', false);
     },
