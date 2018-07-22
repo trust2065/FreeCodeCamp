@@ -13,7 +13,7 @@ class Home extends Component {
 
   componentDidMount() {
     let rows = [];
-    FirebaseAction.getList(snapshot => {
+    FirebaseAction.getOnce('', snapshot => {
       snapshot.forEach(child => {
         let key = child.key;
         let recipe = child.val();

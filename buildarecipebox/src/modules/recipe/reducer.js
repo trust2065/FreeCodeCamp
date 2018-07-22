@@ -6,7 +6,6 @@ import {
   combineActions
 } from 'redux-actions';
 import { combineReducers } from 'redux';
-import database from '../core/Firebase';
 import dotProp from 'dot-prop-immutable';
 import FirebaseActions from '../core/FirebaseAction';
 import reduceReducers from 'reduce-reducers';
@@ -112,19 +111,17 @@ const {
 export function recipeFetch(recipeId) {
   return dispatch => {
     dispatch(recipeFetchPending());
-    const recipeRef = database.ref(`recipe/${recipeId}`);
 
-    return recipeRef.once('value').then(
-      function(snapshot) {
+    return FirebaseActions.getOnce(
+      recipeId,
+      snapshot => {
         let recipe = snapshot.val();
-        // console.log('recipe');
-        // console.log(recipe);
         if (recipe) {
           dispatch(recipeFetchFulfill(recipe, recipeId));
         } else {
           // get last id
           let lastId = 0;
-          FirebaseActions.getList(snapshot => {
+          FirebaseActions.getOnce('', snapshot => {
             snapshot.forEach(function(childSnapshot) {
               let key = childSnapshot.key;
               if (parseInt(key, 10) > parseInt(lastId, 10)) {
@@ -138,7 +135,7 @@ export function recipeFetch(recipeId) {
           });
         }
       },
-      function(err) {
+      err => {
         dispatch(recipeFetctReject(err));
       }
     );
@@ -150,28 +147,31 @@ const {
   recipeUpdateFulfill,
   recipeUpdateReject
 } = createActions(
+  {
+    RECIPE_UPDATE_REJECT: error => ({ error })
+  },
   'RECIPE_UPDATE_PENDING',
-  'RECIPE_UPDATE_FULFILL',
-  'RECIPE_UPDATE_REJECT'
+  'RECIPE_UPDATE_FULFILL'
 );
 
 export function recipeUpdate(recipeId, name, ingredients, steps, imgURL = '') {
   return dispatch => {
     dispatch(recipeUpdatePending());
-    database
-      .ref('recipe/' + recipeId)
-      .update({
+    FirebaseActions.update(
+      recipeId,
+      {
         name: name,
         ingredients: ingredients,
         steps: steps,
         imgURL: imgURL
-      })
-      .then(() => {
+      },
+      () => {
         dispatch(recipeUpdateFulfill());
-      })
-      .catch(function(err) {
-        dispatch(recipeUpdateReject());
-      });
+      },
+      err => {
+        dispatch(recipeUpdateReject(err));
+      }
+    );
   };
 }
 

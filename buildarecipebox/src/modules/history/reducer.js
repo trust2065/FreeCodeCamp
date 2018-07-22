@@ -1,6 +1,6 @@
 import { createAction, handleActions } from 'redux-actions';
 import { combineReducers } from 'redux';
-import database from '../core/Firebase';
+import FirebaseActions from '../core/FirebaseAction';
 import dotProp from 'dot-prop-immutable';
 
 //===========
@@ -42,10 +42,9 @@ const recipeFetctReject = createAction(`${PREFIX}/RECIPE_FETCH_REJECT`);
 export function recipeFetch(recipeId) {
   return dispatch => {
     dispatch(recipeFetchPending());
-    const recipeRef = database.ref(`recipe/${recipeId}`);
-
-    return recipeRef.once('value').then(
-      function(snapshot) {
+    FirebaseActions.getOnce(
+      recipeId,
+      snapshot => {
         let recipe = snapshot.val();
         if (recipe) {
           dispatch(recipeFetchFulfill(recipe, recipeId));
@@ -53,7 +52,7 @@ export function recipeFetch(recipeId) {
           dispatch(recipeFetctReject('recipe not exist'));
         }
       },
-      function(err) {
+      err => {
         dispatch(recipeFetctReject(err));
       }
     );

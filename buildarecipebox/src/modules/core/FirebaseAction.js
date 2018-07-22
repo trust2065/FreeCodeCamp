@@ -1,45 +1,33 @@
 import Firebase from './Firebase';
 
-export function get(id, callback) {
-  console.log('getRecipe');
+function getOnce(recipeId, callbackSuccess, callbackErr) {
+  const recipeRef = Firebase.ref(`recipe/${recipeId}`);
 
-  let recipeRef = Firebase.ref(`recipe/${id}`);
-  recipeRef.on('value', function(snapshot) {
-    // console.log('getRecipe result: ');
-    let recipe = snapshot.val();
-    // console.log(recipe);
-    if (callback) {
-      callback(recipe);
+  // have to return if you want to chain other action
+  return recipeRef.once('value').then(
+    snapshot => {
+      callbackSuccess(snapshot);
+    },
+    err => {
+      callbackErr(err);
     }
-    return;
-  });
+  );
 }
 
-export function update(id, data, callback) {
-  console.log(`updateRecipe, id: ${id}`);
+function update(recipeId, data, callbackSuccess, callbackErr) {
+  const recipeRef = Firebase.ref('recipe/' + recipeId);
 
-  let { name, ingredients, steps } = data;
-
-  Firebase.ref('recipe/' + id)
-    .update({ name: name, ingredients: ingredients, steps: steps })
+  recipeRef
+    .update(data)
     .then(() => {
-      if (callback) {
-        callback();
+      if (callbackSuccess) {
+        callbackSuccess();
       }
     })
-    .catch(function(error) {
-      console.error('update錯誤', error);
+    .catch(error => {
+      callbackErr(error);
     });
 }
 
-export function getList(callback) {
-  console.log('getRecipeList');
-  Firebase.ref('recipe').once('value', function(snapshot) {
-    if (callback) {
-      callback(snapshot);
-    }
-  });
-}
-
-// export default updateRecipe;
-export default { get, getList, update };
+// export default {};
+export default { getOnce, update };

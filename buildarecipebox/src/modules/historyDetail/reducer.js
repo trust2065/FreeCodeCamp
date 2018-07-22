@@ -2,10 +2,10 @@ import _ from 'lodash';
 import axios from 'axios';
 import { createAction, handleActions, combineActions } from 'redux-actions';
 import { combineReducers } from 'redux';
-import database from '../core/Firebase';
 import dotProp from 'dot-prop-immutable';
 import moment from 'moment';
 import reduceReducers from 'reduce-reducers';
+import FirebaseActions from '../core/FirebaseAction';
 
 //===========
 // Constants
@@ -135,10 +135,10 @@ const recipeFetchReject = createAction(`${PREFIX}/RECIPE_FETCH_REJECT`);
 export function recipeFetch(recipeId) {
   return dispatch => {
     dispatch(recipeFetchPending());
-    const recipeRef = database.ref(`recipe/${recipeId}`);
 
-    return recipeRef.once('value').then(
-      function(snapshot) {
+    return FirebaseActions.getOnce(
+      recipeId,
+      snapshot => {
         let recipe = snapshot.val();
         if (recipe) {
           dispatch(recipeFetchFulfill(recipe, recipeId));
@@ -146,7 +146,7 @@ export function recipeFetch(recipeId) {
           dispatch(recipeFetchReject('recipe not exist'));
         }
       },
-      function(err) {
+      err => {
         dispatch(recipeFetchReject(err));
       }
     );
@@ -179,17 +179,19 @@ export const historyUpdateReject = createAction(
 export function historyUpdate(recipeId, histories) {
   return dispatch => {
     dispatch(historyUpdatePending());
-    database
-      .ref('recipe/' + recipeId)
-      .update({
+
+    FirebaseActions.update(
+      recipeId,
+      {
         histories: histories
-      })
-      .then(() => {
+      },
+      () => {
         dispatch(historyUpdateFulfill());
-      })
-      .catch(function(err) {
+      },
+      err => {
         dispatch(historyUpdateReject());
-      });
+      }
+    );
   };
 }
 
@@ -307,6 +309,7 @@ const historyEditHandler = (state, action) => {
   const history = histories[index];
 
   const hasDate = !!_.get(history, 'date');
+  // set date today if not exist
   if (!hasDate) {
     const date = moment().format('YYYY/MM/DD');
     state = dotProp.set(state, `histories.${index}.date`, date);
