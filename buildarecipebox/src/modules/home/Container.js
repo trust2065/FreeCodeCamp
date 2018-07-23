@@ -5,6 +5,8 @@ import { RecipeRow } from './components';
 import './Home.css';
 import $ from 'jquery';
 import 'datatables.net';
+import '../../any-number.js';
+
 class Home extends Component {
   constructor(props) {
     super(props);
@@ -23,7 +25,10 @@ class Home extends Component {
 
       this.setState({ rows: rows });
       $('#recipeTable').DataTable({
-        columnDefs: [{ width: '10%', targets: 0 }]
+        columnDefs: [
+          { width: '10%', targets: 0 },
+          { type: 'any-number', targets: 0 }
+        ]
       });
     });
   }
