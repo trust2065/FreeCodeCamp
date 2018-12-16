@@ -20,7 +20,7 @@ class ImageUploader extends Component {
           {uploading ? (
             <label className="btn btn-block mt-2 mb-2">Uploading</label>
           ) : (
-            <div className="d-flex justify-content-between mt-2 mb-2">
+            <div className="d-flex justify-content-center mt-2 mb-2">
               <StyledLabel
                 htmlFor={`image_${imgIndex}`}
                 type="button"
@@ -46,7 +46,9 @@ class ImageUploader extends Component {
         {!url ||
           (url !== '' && (
             <DraggableImage imgIndex={imgIndex} onSwitch={onSwitch}>
-              <img className="img-fluid" src={url} alt="img" />
+              <div className="d-flex" style={{ minHeight: '25vw', justifyContent: 'center', alignItems: 'center' }}>
+                <img className="img-fluid" src={url} alt="img" />
+              </div>
             </DraggableImage>
           ))}
       </div>

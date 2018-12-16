@@ -83,10 +83,8 @@ export default class ImageBox extends Component {
             &#8594;
           </button>
         </div>
-        <div className="row mt-2">
-          <div style={{ height: '25vw' }}>
-            <img className="img-fluid" src={url} alt="record" />
-          </div>
+        <div className="row mt-2 d-flex align-items-center justify-content-center" style={{ height: '25vw' }}>
+            <img style={{maxHeight: '100%', maxWidth: '100%'}} className="img-fluid" src={url} alt="record" />
         </div>
         {this.props.children}
       </div>

@@ -162,8 +162,7 @@ const HistoryCreate = connect(store => {
           imageUploaders.push(
             <div
               key={`imageUploader_${no}`}
-              className="col-sm-4"
-              style={{ minHeight: '15vw' }}>
+              className="col-sm-4">
               <ImageUploader
                 imgIndex={imgIndex}
                 url={url}
@@ -230,7 +229,7 @@ const HistoryCreate = connect(store => {
                 Add Image
               </button>
             </div>
-          </div>
+          </div> 
           <div className="row mt-5">
             <DragDropZone>{imageUploaders}</DragDropZone>
           </div>

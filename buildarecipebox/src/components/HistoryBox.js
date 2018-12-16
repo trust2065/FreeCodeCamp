@@ -28,7 +28,7 @@ export default class HistoryBox extends Component {
             </div>
           </div>
           {showRemark && (
-            <div className="row">
+            <div className="row mt-2">
               <p>{remark}</p>
             </div>
           )}
